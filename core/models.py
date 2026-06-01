@@ -61,10 +61,21 @@ class Venda(models.Model):
         ('direta', 'Direta'),
         ('prova', 'Convertida de Prova'),
     ]
+    FORMA_PAGAMENTO_CHOICES = [
+        ('avista', 'À Vista'),
+        ('fiado', 'Fiado'),
+    ]
+    DESCONTO_CHOICES = [
+        (0, 'Sem desconto'),
+        (5, '5%'),
+        (10, '10%'),
+    ]
     cliente = models.ForeignKey(Cliente, on_delete=models.CASCADE, related_name='vendas')
     data = models.DateField()
     total = models.DecimalField(max_digits=10, decimal_places=2)
     origem = models.CharField(max_length=10, choices=ORIGEM_CHOICES, default='direta')
+    forma_pagamento = models.CharField(max_length=10, choices=FORMA_PAGAMENTO_CHOICES, default='fiado')
+    desconto_percentual = models.IntegerField(choices=DESCONTO_CHOICES, default=0)
 
     def __str__(self):
         return f"Venda {self.cliente.nome} - {self.data}"
