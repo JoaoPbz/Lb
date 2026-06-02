@@ -1,0 +1,62 @@
+{% extends 'core/base.html' %}
+
+{% block title %}Nova Prova{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div class="card-header bg-dark text-white">
+        <h5 class="mb-0">Nova Prova</h5>
+    </div>
+    <div class="card-body">
+        <form method="post">
+            {% csrf_token %}
+            <div class="row">
+                <div class="col-md-4 mb-3">
+                    <label class="form-label">Cliente</label>
+                    <select name="cliente_id" class="form-select" required>
+                        <option value="">Selecione...</option>
+                        {% for cliente in clientes %}
+                        <option value="{{ cliente.id }}">{{ cliente.nome }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <label class="form-label">Data de Saída</label>
+                    <input type="date" name="data_saida" class="form-control" required>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <label class="form-label">Devolução Prevista</label>
+                    <input type="date" name="data_devolucao_prevista" class="form-control">
+                </div>
+            </div>
+
+            <hr>
+            <h6>Produtos para prova</h6>
+            <input type="text" id="busca-produto" class="form-control mb-3"
+                placeholder="Buscar produto por nome ou código...">
+            {% for produto in produtos %}
+            <div class="form-check produto-item">
+                <input class="form-check-input" type="checkbox" name="produtos[]" value="{{ produto.id }}">
+                <label class="form-check-label">
+                    {{ produto.nome }} — {{ produto.tamanho }} {{ produto.cor }}
+                </label>
+            </div>
+            {% endfor %}
+
+            <div class="d-flex gap-2 mt-3">
+                <button type="submit" class="btn btn-success">Salvar Prova</button>
+                <a href="{% url 'provas' %}" class="btn btn-secondary">Cancelar</a>
+            </div>
+        </form>
+    </div>
+</div>
+<script>
+    document.getElementById('busca-produto').addEventListener('input', function () {
+        const termo = this.value.toLowerCase();
+        document.querySelectorAll('.produto-item').forEach(function (item) {
+            const texto = item.textContent.toLowerCase();
+            item.style.display = texto.includes(termo) ? '' : 'none';
+        });
+    });
+</script>
+{% endblock %}

@@ -3,6 +3,7 @@ from .models import Cliente
 from .models import Cliente, Produto
 from .models import Cliente, Produto, Compra
 from datetime import date
+from .models import Cliente, Produto, Compra, Prova, ItemProva, Venda, ItemVenda
 
 def clientes(request):
     lista_clientes = Cliente.objects.all()
@@ -88,3 +89,48 @@ def nova_compra(request):
 
         return redirect('produtos')
     return render(request, 'core/nova_compra.html')
+
+
+def provas(request):
+    lista_provas = Prova.objects.all().order_by('-data_saida')
+    return render(request, 'core/provas.html', {'provas': lista_provas})
+
+def nova_prova(request):
+    if request.method == 'POST':
+        cliente_id = request.POST.get('cliente_id')
+        data_saida = request.POST.get('data_saida')
+        data_devolucao = request.POST.get('data_devolucao_prevista')
+        produtos_ids = request.POST.getlist('produtos[]')
+
+        prova = Prova.objects.create(
+            cliente_id=cliente_id,
+            data_saida=data_saida,
+            data_devolucao_prevista=data_devolucao if data_devolucao else None,
+            status='em_prova'
+        )
+
+        for produto_id in produtos_ids:
+            ItemProva.objects.create(prova=prova, produto_id=produto_id)
+
+        return redirect('provas')
+
+    clientes = Cliente.objects.all()
+    produtos = Produto.objects.filter(quantidade_estoque__gt=0)
+    return render(request, 'core/nova_prova.html', {'clientes': clientes, 'produtos': produtos})
+
+def detalhe_prova(request, id):
+    prova = get_object_or_404(Prova, id=id)
+    return render(request, 'core/detalhe_prova.html', {'prova': prova})
+
+def resolver_prova(request, id):
+    prova = get_object_or_404(Prova, id=id)
+    if request.method == 'POST':
+        prova.status = request.POST.get('status')
+        prova.save()
+        return redirect('detalhe_prova', id=prova.id)
+    return redirect('provas')
+
+def excluir_prova(request, id):
+    prova = get_object_or_404(Prova, id=id)
+    prova.delete()
+    return redirect('provas')
