@@ -13,7 +13,6 @@ class Compra(models.Model):
 class Produto(models.Model):
     codigo_marca = models.CharField(max_length=50, unique=True)
     nome = models.CharField(max_length=100)
-    categoria = models.CharField(max_length=50)
     tamanho = models.CharField(max_length=10)
     cor = models.CharField(max_length=30)
     preco_custo = models.DecimalField(max_digits=10, decimal_places=2)
