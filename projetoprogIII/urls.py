@@ -17,4 +17,9 @@ urlpatterns = [
     path('provas/<int:id>/', views.detalhe_prova, name='detalhe_prova'),
     path('provas/<int:id>/resolver/', views.resolver_prova, name='resolver_prova'),
     path('provas/<int:id>/excluir/', views.excluir_prova, name='excluir_prova'),
+    path('vendas/', views.vendas, name='vendas'),
+    path('vendas/nova/', views.nova_venda, name='nova_venda'),
+    path('vendas/<int:id>/', views.detalhe_venda, name='detalhe_venda'),
+    path('vendas/<int:id>/pagamento/', views.novo_pagamento, name='novo_pagamento'),
+    path('vendas/<int:id>/excluir/', views.excluir_venda, name='excluir_venda'),
 ]

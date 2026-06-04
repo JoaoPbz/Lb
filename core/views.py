@@ -4,6 +4,7 @@ from .models import Cliente, Produto
 from .models import Cliente, Produto, Compra
 from datetime import date
 from .models import Cliente, Produto, Compra, Prova, ItemProva, Venda, ItemVenda
+from .models import Cliente, Produto, Compra, Prova, ItemProva, Venda, ItemVenda, Pagamento
 
 def clientes(request):
     lista_clientes = Cliente.objects.all()
@@ -134,3 +135,82 @@ def excluir_prova(request, id):
     prova = get_object_or_404(Prova, id=id)
     prova.delete()
     return redirect('provas')
+
+
+def vendas(request):
+    lista_vendas = Venda.objects.all().order_by('-data')
+    filtro = request.GET.get('filtro')
+
+    for venda in lista_vendas:
+        total_pago = sum(p.valor for p in venda.pagamentos.all())
+        venda.saldo_devedor = venda.total - total_pago
+
+    if filtro == 'aberto':
+        lista_vendas = [v for v in lista_vendas if v.saldo_devedor > 0]
+    elif filtro == 'quitado':
+        lista_vendas = [v for v in lista_vendas if v.saldo_devedor <= 0]
+
+    return render(request, 'core/vendas.html', {'vendas': lista_vendas, 'filtro': filtro})
+
+def nova_venda(request):
+    if request.method == 'POST':
+        cliente_id = request.POST.get('cliente_id')
+        data = request.POST.get('data')
+        forma_pagamento = request.POST.get('forma_pagamento')
+        desconto_percentual = int(request.POST.get('desconto_percentual', 0))
+        total = request.POST.get('total')
+        produtos_ids = request.POST.getlist('produtos[]')
+
+        venda = Venda.objects.create(
+            cliente_id=cliente_id,
+            data=data,
+            forma_pagamento=forma_pagamento,
+            desconto_percentual=desconto_percentual,
+            total=total,
+            origem='direta'
+        )
+
+        for produto_id in produtos_ids:
+            produto = Produto.objects.get(id=produto_id)
+            ItemVenda.objects.create(
+                venda=venda,
+                produto=produto,
+                quantidade=1,
+                preco_unitario=produto.preco_venda
+            )
+            produto.quantidade_estoque -= 1
+            produto.save()
+
+        if forma_pagamento == 'avista':
+            Pagamento.objects.create(
+                venda=venda,
+                data=data,
+                valor=total
+            )
+
+        return redirect('vendas')
+
+    clientes = Cliente.objects.all()
+    produtos = Produto.objects.filter(quantidade_estoque__gt=0)
+    return render(request, 'core/nova_venda.html', {'clientes': clientes, 'produtos': produtos})
+
+def detalhe_venda(request, id):
+    venda = get_object_or_404(Venda, id=id)
+    return render(request, 'core/detalhe_venda.html', {'venda': venda})
+
+def novo_pagamento(request, id):
+    venda = get_object_or_404(Venda, id=id)
+    if request.method == 'POST':
+        data = request.POST.get('data')
+        valor = request.POST.get('valor')
+        Pagamento.objects.create(venda=venda, data=data, valor=valor)
+        return redirect('detalhe_venda', id=venda.id)
+    return redirect('vendas')
+
+def excluir_venda(request, id):
+    venda = get_object_or_404(Venda, id=id)
+    for item in venda.itens.all():
+        item.produto.quantidade_estoque += item.quantidade
+        item.produto.save()
+    venda.delete()
+    return redirect('vendas')

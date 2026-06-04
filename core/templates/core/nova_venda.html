@@ -1,0 +1,108 @@
+{% extends 'core/base.html' %}
+
+{% block title %}Nova Venda{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div class="card-header bg-dark text-white">
+        <h5 class="mb-0">Nova Venda</h5>
+    </div>
+    <div class="card-body">
+        <form method="post">
+            {% csrf_token %}
+            <div class="row">
+                <div class="col-md-4 mb-3">
+                    <label class="form-label">Cliente</label>
+                    <select name="cliente_id" class="form-select" required>
+                        <option value="">Selecione...</option>
+                        {% for cliente in clientes %}
+                        <option value="{{ cliente.id }}">{{ cliente.nome }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <label class="form-label">Data</label>
+                    <input type="date" name="data" class="form-control" required>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <label class="form-label">Forma de Pagamento</label>
+                    <select name="forma_pagamento" id="forma_pagamento" class="form-select" required onchange="mostrarDesconto()">
+                        <option value="fiado">Fiado</option>
+                        <option value="avista">À Vista</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="row" id="desconto-box" style="display:none;">
+                <div class="col-md-4 mb-3">
+                    <label class="form-label">Desconto</label>
+                    <div class="d-flex gap-2">
+                        <button type="button" class="btn btn-outline-secondary w-100" onclick="setDesconto(0)">Sem desconto</button>
+                        <button type="button" class="btn btn-outline-primary w-100" onclick="setDesconto(5)">5%</button>
+                        <button type="button" class="btn btn-outline-success w-100" onclick="setDesconto(10)">10%</button>
+                    </div>
+                    <input type="hidden" name="desconto_percentual" id="desconto_percentual" value="0">
+                    <small class="text-muted">Desconto selecionado: <span id="desconto-label">Sem desconto</span></small>
+                </div>
+            </div>
+
+            <hr>
+            <h6>Produtos</h6>
+            <input type="text" id="busca-produto" class="form-control mb-3" placeholder="Buscar produto...">
+            {% for produto in produtos %}
+            <div class="form-check produto-item">
+                <input class="form-check-input" type="checkbox" name="produtos[]" value="{{ produto.id }}" onchange="calcularTotal()">
+                <label class="form-check-label">
+                    {{ produto.nome }} — {{ produto.tamanho }} {{ produto.cor }} — R$ {{ produto.preco_venda }}
+                </label>
+            </div>
+            {% endfor %}
+
+            <div class="alert alert-info mt-3">
+                <strong>Total: R$ <span id="total-venda">0.00</span></strong>
+            </div>
+            <input type="hidden" name="total" id="total-hidden" value="0">
+
+            <div class="d-flex gap-2 mt-2">
+                <button type="submit" class="btn btn-success">Salvar Venda</button>
+                <a href="{% url 'vendas' %}" class="btn btn-secondary">Cancelar</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+function mostrarDesconto() {
+    const forma = document.getElementById('forma_pagamento').value;
+    document.getElementById('desconto-box').style.display = forma === 'avista' ? '' : 'none';
+    if (forma !== 'avista') setDesconto(0);
+}
+
+function setDesconto(valor) {
+    document.getElementById('desconto_percentual').value = valor;
+    document.getElementById('desconto-label').textContent = valor === 0 ? 'Sem desconto' : valor + '%';
+    calcularTotal();
+}
+
+function calcularTotal() {
+    const checkboxes = document.querySelectorAll('input[name="produtos[]"]:checked');
+    let total = 0;
+    checkboxes.forEach(function(cb) {
+        const label = cb.nextElementSibling.textContent;
+        const preco = parseFloat(label.split('R$')[1].trim());
+        total += preco;
+    });
+    const desconto = parseInt(document.getElementById('desconto_percentual').value) || 0;
+    total = total * (1 - desconto / 100);
+    document.getElementById('total-venda').textContent = total.toFixed(2);
+    document.getElementById('total-hidden').value = total.toFixed(2);
+}
+
+document.getElementById('busca-produto').addEventListener('input', function() {
+    const termo = this.value.toLowerCase();
+    document.querySelectorAll('.produto-item').forEach(function(item) {
+        item.style.display = item.textContent.toLowerCase().includes(termo) ? '' : 'none';
+    });
+});
+</script>
+{% endblock %}
