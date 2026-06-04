@@ -271,3 +271,30 @@ def perfil_cliente(request, id):
         'total_ano': total_ano,
         'provas_abertas': provas_abertas,
     })
+    
+def dashboard(request):
+    hoje = date.today()
+    mes = int(request.GET.get('mes', hoje.month))
+    ano = int(request.GET.get('ano', hoje.year))
+    anos = list(range(2024, hoje.year + 2))
+
+    vendas = Venda.objects.filter(data__month=mes, data__year=ano)
+    despesas = Despesa.objects.filter(data__month=mes, data__year=ano)
+    compras = Compra.objects.filter(data__month=mes, data__year=ano)
+
+    total_vendido = sum(v.total for v in vendas)
+    total_despesas = sum(d.valor for d in despesas)
+    total_compras = sum(c.valor_total for c in compras)
+    lucro = total_vendido - total_despesas - total_compras
+
+    return render(request, 'core/dashboard.html', {
+        'mes': mes,
+        'ano': ano,
+        'anos': anos,
+        'vendas': vendas,
+        'despesas': despesas,
+        'total_vendido': total_vendido,
+        'total_despesas': total_despesas,
+        'total_compras': total_compras,
+        'lucro': lucro,
+    })    

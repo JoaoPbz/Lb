@@ -1,0 +1,123 @@
+{% extends 'core/base.html' %}
+
+{% block title %}Dashboard{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>Dashboard</h2>
+    <form method="get" class="d-flex gap-2">
+        <select name="mes" class="form-select">
+            <option value="1" {% if mes == 1 %}selected{% endif %}>Janeiro</option>
+            <option value="2" {% if mes == 2 %}selected{% endif %}>Fevereiro</option>
+            <option value="3" {% if mes == 3 %}selected{% endif %}>Março</option>
+            <option value="4" {% if mes == 4 %}selected{% endif %}>Abril</option>
+            <option value="5" {% if mes == 5 %}selected{% endif %}>Maio</option>
+            <option value="6" {% if mes == 6 %}selected{% endif %}>Junho</option>
+            <option value="7" {% if mes == 7 %}selected{% endif %}>Julho</option>
+            <option value="8" {% if mes == 8 %}selected{% endif %}>Agosto</option>
+            <option value="9" {% if mes == 9 %}selected{% endif %}>Setembro</option>
+            <option value="10" {% if mes == 10 %}selected{% endif %}>Outubro</option>
+            <option value="11" {% if mes == 11 %}selected{% endif %}>Novembro</option>
+            <option value="12" {% if mes == 12 %}selected{% endif %}>Dezembro</option>
+        </select>
+        <select name="ano" class="form-select">
+            {% for a in anos %}
+            <option value="{{ a }}" {% if a == ano %}selected{% endif %}>{{ a }}</option>
+            {% endfor %}
+        </select>
+        <button type="submit" class="btn btn-primary">Filtrar</button>
+    </form>
+</div>
+
+<div class="row mb-4">
+    <div class="col-md-3">
+        <div class="card text-center border-success">
+            <div class="card-body">
+                <h6 class="card-title">Total Vendido</h6>
+                <p class="card-text text-success fw-bold fs-4">R$ {{ total_vendido }}</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card text-center border-danger">
+            <div class="card-body">
+                <h6 class="card-title">Total Despesas</h6>
+                <p class="card-text text-danger fw-bold fs-4">R$ {{ total_despesas }}</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card text-center border-warning">
+            <div class="card-body">
+                <h6 class="card-title">Total Compras</h6>
+                <p class="card-text text-warning fw-bold fs-4">R$ {{ total_compras }}</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card text-center {% if lucro >= 0 %}border-success{% else %}border-danger{% endif %}">
+            <div class="card-body">
+                <h6 class="card-title">Lucro Real</h6>
+                <p class="card-text fw-bold fs-4 {% if lucro >= 0 %}text-success{% else %}text-danger{% endif %}">R$ {{ lucro }}</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header bg-dark text-white">Vendas do Período</div>
+            <div class="card-body p-0">
+                <table class="table table-striped mb-0">
+                    <thead>
+                        <tr>
+                            <th>Cliente</th>
+                            <th>Data</th>
+                            <th>Total</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for venda in vendas %}
+                        <tr>
+                            <td>{{ venda.cliente.nome }}</td>
+                            <td>{{ venda.data }}</td>
+                            <td>R$ {{ venda.total }}</td>
+                        </tr>
+                        {% empty %}
+                        <tr><td colspan="3" class="text-center">Nenhuma venda no período.</td></tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header bg-dark text-white">Despesas do Período</div>
+            <div class="card-body p-0">
+                <table class="table table-striped mb-0">
+                    <thead>
+                        <tr>
+                            <th>Descrição</th>
+                            <th>Data</th>
+                            <th>Valor</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for despesa in despesas %}
+                        <tr>
+                            <td>{{ despesa.descricao }}</td>
+                            <td>{{ despesa.data }}</td>
+                            <td>R$ {{ despesa.valor }}</td>
+                        </tr>
+                        {% empty %}
+                        <tr><td colspan="3" class="text-center">Nenhuma despesa no período.</td></tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
