@@ -22,4 +22,8 @@ urlpatterns = [
     path('vendas/<int:id>/', views.detalhe_venda, name='detalhe_venda'),
     path('vendas/<int:id>/pagamento/', views.novo_pagamento, name='novo_pagamento'),
     path('vendas/<int:id>/excluir/', views.excluir_venda, name='excluir_venda'),
+    path('despesas/', views.despesas, name='despesas'),
+    path('despesas/nova/', views.nova_despesa, name='nova_despesa'),
+    path('despesas/editar/<int:id>/', views.editar_despesa, name='editar_despesa'),
+    path('despesas/excluir/<int:id>/', views.excluir_despesa, name='excluir_despesa'),
 ]

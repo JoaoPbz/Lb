@@ -5,6 +5,7 @@ from .models import Cliente, Produto, Compra
 from datetime import date
 from .models import Cliente, Produto, Compra, Prova, ItemProva, Venda, ItemVenda
 from .models import Cliente, Produto, Compra, Prova, ItemProva, Venda, ItemVenda, Pagamento
+from .models import Cliente, Produto, Compra, Prova, ItemProva, Venda, ItemVenda, Pagamento, Despesa
 
 def clientes(request):
     lista_clientes = Cliente.objects.all()
@@ -214,3 +215,35 @@ def excluir_venda(request, id):
         item.produto.save()
     venda.delete()
     return redirect('vendas')
+
+
+def despesas(request):
+    lista_despesas = Despesa.objects.all().order_by('-data')
+    return render(request, 'core/despesas.html', {'despesas': lista_despesas})
+
+def nova_despesa(request):
+    if request.method == 'POST':
+        Despesa.objects.create(
+            descricao=request.POST.get('descricao'),
+            valor=request.POST.get('valor'),
+            data=request.POST.get('data'),
+            categoria=request.POST.get('categoria')
+        )
+        return redirect('despesas')
+    return render(request, 'core/despesa_form.html')
+
+def editar_despesa(request, id):
+    despesa = get_object_or_404(Despesa, id=id)
+    if request.method == 'POST':
+        despesa.descricao = request.POST.get('descricao')
+        despesa.valor = request.POST.get('valor')
+        despesa.data = request.POST.get('data')
+        despesa.categoria = request.POST.get('categoria')
+        despesa.save()
+        return redirect('despesas')
+    return render(request, 'core/despesa_form.html', {'despesa': despesa})
+
+def excluir_despesa(request, id):
+    despesa = get_object_or_404(Despesa, id=id)
+    despesa.delete()
+    return redirect('despesas')
