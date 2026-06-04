@@ -6,6 +6,7 @@ from datetime import date
 from .models import Cliente, Produto, Compra, Prova, ItemProva, Venda, ItemVenda
 from .models import Cliente, Produto, Compra, Prova, ItemProva, Venda, ItemVenda, Pagamento
 from .models import Cliente, Produto, Compra, Prova, ItemProva, Venda, ItemVenda, Pagamento, Despesa
+from datetime import date
 
 def clientes(request):
     lista_clientes = Cliente.objects.all()
@@ -247,3 +248,26 @@ def excluir_despesa(request, id):
     despesa = get_object_or_404(Despesa, id=id)
     despesa.delete()
     return redirect('despesas')
+
+
+def perfil_cliente(request, id):
+    cliente = get_object_or_404(Cliente, id=id)
+    vendas = cliente.vendas.all().order_by('-data')
+    provas = cliente.provas.all().order_by('-data_saida')
+
+    for venda in vendas:
+        total_pago = sum(p.valor for p in venda.pagamentos.all())
+        venda.saldo_devedor = venda.total - total_pago
+
+    saldo_devedor = sum(v.saldo_devedor for v in vendas)
+    total_ano = sum(v.total for v in vendas if v.data.year == date.today().year)
+    provas_abertas = provas.filter(status='em_prova').count()
+
+    return render(request, 'core/perfil_cliente.html', {
+        'cliente': cliente,
+        'vendas': vendas,
+        'provas': provas,
+        'saldo_devedor': saldo_devedor,
+        'total_ano': total_ano,
+        'provas_abertas': provas_abertas,
+    })

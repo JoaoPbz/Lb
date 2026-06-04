@@ -13,8 +13,6 @@
         <tr>
             <th>Nome</th>
             <th>Telefone</th>
-            <th>Saldo Devedor</th>
-            <th>Total no Ano</th>
             <th>Ações</th>
         </tr>
     </thead>
@@ -23,17 +21,15 @@
         <tr>
             <td>{{ cliente.nome }}</td>
             <td>{{ cliente.telefone }}</td>
-            <td>R$ {{ cliente.saldo_devedor }}</td>
-            <td>R$ {{ cliente.total_ano }}</td>
             <td>
-                <a href="#" class="btn btn-sm btn-primary">Ver</a>
+                <a href="{% url 'perfil_cliente' cliente.id %}" class="btn btn-sm btn-primary">Ver</a>
                 <a href="{% url 'editar_cliente' cliente.id %}" class="btn btn-sm btn-warning">Editar</a>
-               <a href="{% url 'excluir_cliente' cliente.id %}" class="btn btn-sm btn-danger">Excluir</a>
+                <a href="{% url 'excluir_cliente' cliente.id %}" class="btn btn-sm btn-danger">Excluir</a>
             </td>
         </tr>
         {% empty %}
         <tr>
-            <td colspan="5" class="text-center">Nenhum cliente cadastrado ainda.</td>
+            <td colspan="3" class="text-center">Nenhum cliente cadastrado ainda.</td>
         </tr>
         {% endfor %}
     </tbody>
