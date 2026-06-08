@@ -11,6 +11,9 @@ from .services import ClienteService, VendaService, RelatorioService
 from django.http import HttpResponse
 import openpyxl
 from openpyxl.styles import Font, PatternFill, Alignment
+import json
+import subprocess
+from django.utils import timezone
 
 def clientes(request):
     lista_clientes = Cliente.objects.all()
@@ -429,3 +432,60 @@ def exportar_clientes_excel(request):
     response['Content-Disposition'] = 'attachment; filename="clientes_saldo.xlsx"'
     wb.save(response)
     return response
+
+
+def backup(request):
+    from django.core import serializers
+    from .models import Cliente, Produto, Compra, Prova, ItemProva, Venda, ItemVenda, Pagamento, Despesa
+
+    dados = {}
+    modelos = [Cliente, Produto, Compra, Prova, ItemProva, Venda, ItemVenda, Pagamento, Despesa]
+
+    for modelo in modelos:
+        nome = modelo.__name__
+        dados[nome] = json.loads(serializers.serialize('json', modelo.objects.all()))
+
+    response = HttpResponse(
+        json.dumps(dados, indent=2, ensure_ascii=False),
+        content_type='application/json'
+    )
+    agora = timezone.now().strftime('%Y%m%d_%H%M%S')
+    response['Content-Disposition'] = f'attachment; filename="backup_{agora}.json"'
+    return response
+
+def restaurar_backup(request):
+    if request.method == 'POST':
+        arquivo = request.FILES.get('arquivo')
+        if not arquivo:
+            return redirect('dashboard')
+
+        from django.core import serializers
+        from .models import Cliente, Produto, Compra, Prova, ItemProva, Venda, ItemVenda, Pagamento, Despesa
+
+        try:
+            dados = json.loads(arquivo.read().decode('utf-8'))
+
+            # Limpa os dados na ordem certa pra evitar erro de FK
+            ItemVenda.objects.all().delete()
+            ItemProva.objects.all().delete()
+            Pagamento.objects.all().delete()
+            Venda.objects.all().delete()
+            Prova.objects.all().delete()
+            Produto.objects.all().delete()
+            Compra.objects.all().delete()
+            Cliente.objects.all().delete()
+            Despesa.objects.all().delete()
+
+            # Restaura na ordem certa
+            ordem = ['Cliente', 'Compra', 'Produto', 'Prova', 'ItemProva', 'Venda', 'ItemVenda', 'Pagamento', 'Despesa']
+            for nome in ordem:
+                if nome in dados:
+                    for obj in serializers.deserialize('json', json.dumps(dados[nome])):
+                        obj.save()
+
+        except Exception as e:
+            return HttpResponse(f"Erro ao restaurar backup: {e}", status=400)
+
+        return redirect('dashboard')
+
+    return render(request, 'core/restaurar_backup.html')

@@ -30,4 +30,6 @@ urlpatterns = [
     path('', views.dashboard, name='dashboard'),
     path('clientes/<int:id>/extrato/', views.exportar_extrato, name='exportar_extrato'),
     path('clientes/exportar/', views.exportar_clientes_excel, name='exportar_clientes_excel'),
+    path('backup/', views.backup, name='backup'),
+    path('restaurar/', views.restaurar_backup, name='restaurar_backup'),
 ]
