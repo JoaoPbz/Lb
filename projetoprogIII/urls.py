@@ -28,4 +28,6 @@ urlpatterns = [
     path('despesas/excluir/<int:id>/', views.excluir_despesa, name='excluir_despesa'),
     path('clientes/<int:id>/', views.perfil_cliente, name='perfil_cliente'),
     path('', views.dashboard, name='dashboard'),
+    path('clientes/<int:id>/extrato/', views.exportar_extrato, name='exportar_extrato'),
+    path('clientes/exportar/', views.exportar_clientes_excel, name='exportar_clientes_excel'),
 ]
