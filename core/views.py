@@ -7,6 +7,7 @@ from .models import Cliente, Produto, Compra, Prova, ItemProva, Venda, ItemVenda
 from .models import Cliente, Produto, Compra, Prova, ItemProva, Venda, ItemVenda, Pagamento
 from .models import Cliente, Produto, Compra, Prova, ItemProva, Venda, ItemVenda, Pagamento, Despesa
 from datetime import date
+from .services import ClienteService, VendaService, RelatorioService
 
 def clientes(request):
     lista_clientes = Cliente.objects.all()
@@ -250,18 +251,18 @@ def excluir_despesa(request, id):
     return redirect('despesas')
 
 
+
 def perfil_cliente(request, id):
     cliente = get_object_or_404(Cliente, id=id)
     vendas = cliente.vendas.all().order_by('-data')
     provas = cliente.provas.all().order_by('-data_saida')
 
     for venda in vendas:
-        total_pago = sum(p.valor for p in venda.pagamentos.all())
-        venda.saldo_devedor = venda.total - total_pago
+        venda.saldo_devedor = VendaService.calcular_saldo_devedor(venda)
 
-    saldo_devedor = sum(v.saldo_devedor for v in vendas)
-    total_ano = sum(v.total for v in vendas if v.data.year == date.today().year)
-    provas_abertas = provas.filter(status='em_prova').count()
+    saldo_devedor = ClienteService.calcular_saldo_devedor(cliente)
+    total_ano = ClienteService.calcular_total_ano(cliente)
+    provas_abertas = ClienteService.calcular_provas_abertas(cliente)
 
     return render(request, 'core/perfil_cliente.html', {
         'cliente': cliente,
@@ -271,30 +272,18 @@ def perfil_cliente(request, id):
         'total_ano': total_ano,
         'provas_abertas': provas_abertas,
     })
-    
+
 def dashboard(request):
     hoje = date.today()
     mes = int(request.GET.get('mes', hoje.month))
     ano = int(request.GET.get('ano', hoje.year))
     anos = list(range(2024, hoje.year + 2))
 
-    vendas = Venda.objects.filter(data__month=mes, data__year=ano)
-    despesas = Despesa.objects.filter(data__month=mes, data__year=ano)
-    compras = Compra.objects.filter(data__month=mes, data__year=ano)
-
-    total_vendido = sum(v.total for v in vendas)
-    total_despesas = sum(d.valor for d in despesas)
-    total_compras = sum(c.valor_total for c in compras)
-    lucro = total_vendido - total_despesas - total_compras
+    resumo = RelatorioService.calcular_resumo_mensal(mes, ano)
 
     return render(request, 'core/dashboard.html', {
         'mes': mes,
         'ano': ano,
         'anos': anos,
-        'vendas': vendas,
-        'despesas': despesas,
-        'total_vendido': total_vendido,
-        'total_despesas': total_despesas,
-        'total_compras': total_compras,
-        'lucro': lucro,
-    })    
+        **resumo,
+    })
