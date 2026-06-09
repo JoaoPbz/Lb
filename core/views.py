@@ -304,11 +304,9 @@ def exportar_extrato(request, id):
     ws = wb.active
     ws.title = "Extrato"
 
-    # Estilo do cabeçalho
     header_font = Font(bold=True, color="FFFFFF")
     header_fill = PatternFill("solid", fgColor="333333")
 
-    # Título
     ws.merge_cells('A1:F1')
     ws['A1'] = f"Extrato — {cliente.nome}"
     ws['A1'].font = Font(bold=True, size=14)
@@ -320,7 +318,6 @@ def exportar_extrato(request, id):
 
     ws.append([])
 
-    # Cabeçalho da tabela
     headers = ['Data', 'Total', 'Desconto', 'Pagamento', 'Total Pago', 'Saldo Devedor']
     ws.append(headers)
     for col, _ in enumerate(headers, start=1):
@@ -329,33 +326,33 @@ def exportar_extrato(request, id):
         cell.fill = header_fill
         cell.alignment = Alignment(horizontal='center')
 
-    # Dados das vendas
+    def formatar(v):
+        return f"R$ {float(v):,.2f}".replace(",", "X").replace(".", ",").replace("X", ".")
+
     for venda in vendas:
         total_pago = sum(p.valor for p in venda.pagamentos.all())
         saldo = venda.total - total_pago
         ws.append([
             str(venda.data),
-            float(venda.total),
+            formatar(venda.total),
             f"{venda.desconto_percentual}%",
             venda.get_forma_pagamento_display(),
-            float(total_pago),
-            float(saldo),
+            formatar(total_pago),
+            formatar(saldo),
         ])
 
     ws.append([])
 
-    # Totais finais
     saldo_total = ClienteService.calcular_saldo_devedor(cliente)
     total_ano = ClienteService.calcular_total_ano(cliente)
 
-    ws.append(['', '', '', '', 'Saldo Devedor Total:', float(saldo_total)])
-    ws.append(['', '', '', '', 'Total Gasto no Ano:', float(total_ano)])
+    ws.append(['', '', '', '', 'Saldo Devedor Total:', formatar(saldo_total)])
+    ws.append(['', '', '', '', 'Total Gasto no Ano:', formatar(total_ano)])
 
     for row in [ws.max_row - 1, ws.max_row]:
         ws.cell(row=row, column=5).font = Font(bold=True)
         ws.cell(row=row, column=6).font = Font(bold=True)
 
-# Ajusta largura das colunas
     for col_idx in range(1, 7):
         col_letter = openpyxl.utils.get_column_letter(col_idx)
         max_length = 0
@@ -367,7 +364,6 @@ def exportar_extrato(request, id):
                 pass
         ws.column_dimensions[col_letter].width = max_length + 4
 
-    # Retorna o arquivo
     response = HttpResponse(
         content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
     )
@@ -402,7 +398,10 @@ def exportar_clientes_excel(request):
         cell.fill = header_fill
         cell.alignment = Alignment(horizontal='center')
 
-    # Dados
+     # Dados
+    def formatar(v):
+        return f"R$ {float(v):,.2f}".replace(",", "X").replace(".", ",").replace("X", ".")
+
     for cliente in clientes:
         saldo = ClienteService.calcular_saldo_devedor(cliente)
         total_compras = sum(v.total for v in cliente.vendas.all())
@@ -410,9 +409,9 @@ def exportar_clientes_excel(request):
         ws.append([
             cliente.nome,
             cliente.telefone,
-            float(total_compras),
-            float(total_pago),
-            float(saldo),
+            formatar(total_compras),
+            formatar(total_pago),
+            formatar(saldo),
         ])
 
     # Ajusta largura
