@@ -1,4 +1,5 @@
 {% extends 'core/base.html' %}
+{% load filtros %}
 
 {% block title %}Nova Venda{% endblock %}
 
@@ -53,7 +54,7 @@
             <div class="form-check produto-item">
                 <input class="form-check-input" type="checkbox" name="produtos[]" value="{{ produto.id }}" onchange="calcularTotal()">
                 <label class="form-check-label">
-                    {{ produto.nome }} — {{ produto.tamanho }} {{ produto.cor }} — R$ {{ produto.preco_venda }}
+                    {{ produto.nome }} — {{ produto.tamanho }} {{ produto.cor }} — R$ {{ produto.preco_venda|moeda }}
                 </label>
             </div>
             {% endfor %}

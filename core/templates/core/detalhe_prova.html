@@ -1,4 +1,5 @@
 {% extends 'core/base.html' %}
+{% load filtros %}
 
 {% block title %}Detalhe da Prova{% endblock %}
 
@@ -37,7 +38,7 @@
                     <td>{{ item.produto.nome }}</td>
                     <td>{{ item.produto.tamanho }}</td>
                     <td>{{ item.produto.cor }}</td>
-                    <td>R$ {{ item.produto.preco_venda }}</td>
+                    <td>R$ {{ item.produto.preco_venda|moeda }}</td>
                 </tr>
                 {% endfor %}
             </tbody>

@@ -1,5 +1,5 @@
 {% extends 'core/base.html' %}
-
+{% load filtros %}
 {% block title %}Despesas{% endblock %}
 
 {% block content %}
@@ -22,7 +22,7 @@
         {% for despesa in despesas %}
         <tr>
             <td>{{ despesa.descricao }}</td>
-            <td>R$ {{ despesa.valor }}</td>
+            <td>R$ {{ despesa.valor|moeda }}</td>
             <td>{{ despesa.data }}</td>
             <td>{{ despesa.categoria }}</td>
             <td>

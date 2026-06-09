@@ -15,6 +15,7 @@ import json
 import subprocess
 from django.utils import timezone
 
+
 def clientes(request):
     lista_clientes = Cliente.objects.all()
     return render(request, 'core/clientes.html', {'clientes': lista_clientes})

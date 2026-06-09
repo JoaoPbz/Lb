@@ -1,4 +1,5 @@
 {% extends 'core/base.html' %}
+{% load filtros %}
 
 {% block title %}Dashboard{% endblock %}
 
@@ -34,7 +35,7 @@
         <div class="card text-center border-success">
             <div class="card-body">
                 <h6 class="card-title">Total Vendido</h6>
-                <p class="card-text text-success fw-bold fs-4">R$ {{ total_vendido }}</p>
+                <p class="card-text text-success fw-bold fs-4">R$ {{ total_vendido|moeda }}</p>
             </div>
         </div>
     </div>
@@ -42,7 +43,7 @@
         <div class="card text-center border-danger">
             <div class="card-body">
                 <h6 class="card-title">Total Despesas</h6>
-                <p class="card-text text-danger fw-bold fs-4">R$ {{ total_despesas }}</p>
+                <p class="card-text text-danger fw-bold fs-4">R$ {{ total_despesas|moeda }}</p>
             </div>
         </div>
     </div>
@@ -50,7 +51,7 @@
         <div class="card text-center border-warning">
             <div class="card-body">
                 <h6 class="card-title">Total Compras</h6>
-                <p class="card-text text-warning fw-bold fs-4">R$ {{ total_compras }}</p>
+                <p class="card-text text-warning fw-bold fs-4">R$ {{ total_compras|moeda }}</p>
             </div>
         </div>
     </div>
@@ -58,7 +59,7 @@
         <div class="card text-center {% if lucro >= 0 %}border-success{% else %}border-danger{% endif %}">
             <div class="card-body">
                 <h6 class="card-title">Lucro Real</h6>
-                <p class="card-text fw-bold fs-4 {% if lucro >= 0 %}text-success{% else %}text-danger{% endif %}">R$ {{ lucro }}</p>
+                <p class="card-text fw-bold fs-4 {% if lucro >= 0 %}text-success{% else %}text-danger{% endif %}">R$ {{ lucro|moeda }}</p>
             </div>
         </div>
     </div>
@@ -82,7 +83,7 @@
                         <tr>
                             <td>{{ venda.cliente.nome }}</td>
                             <td>{{ venda.data }}</td>
-                            <td>R$ {{ venda.total }}</td>
+                            <td>R$ {{ venda.total|moeda }}</td>
                         </tr>
                         {% empty %}
                         <tr><td colspan="3" class="text-center">Nenhuma venda no período.</td></tr>
@@ -109,7 +110,7 @@
                         <tr>
                             <td>{{ despesa.descricao }}</td>
                             <td>{{ despesa.data }}</td>
-                            <td>R$ {{ despesa.valor }}</td>
+                            <td>R$ {{ despesa.valor|moeda }}</td>
                         </tr>
                         {% empty %}
                         <tr><td colspan="3" class="text-center">Nenhuma despesa no período.</td></tr>

@@ -1,4 +1,5 @@
 {% extends 'core/base.html' %}
+{% load filtros %}
 
 {% block title %}Perfil — {{ cliente.nome }}{% endblock %}
 
@@ -24,7 +25,7 @@
         <div class="card text-center border-danger">
             <div class="card-body">
                 <h6 class="card-title">Saldo Devedor Total</h6>
-                <p class="card-text text-danger fw-bold">R$ {{ saldo_devedor }}</p>
+                <p class="card-text text-danger fw-bold">R$ {{ saldo_devedor|moeda }}</p>
             </div>
         </div>
     </div>
@@ -32,7 +33,7 @@
         <div class="card text-center border-success">
             <div class="card-body">
                 <h6 class="card-title">Total Gasto no Ano</h6>
-                <p class="card-text text-success fw-bold">R$ {{ total_ano }}</p>
+                <p class="card-text text-success fw-bold">R$ {{ total_ano|moeda }}</p>
             </div>
         </div>
     </div>
@@ -62,10 +63,10 @@
         {% for venda in vendas %}
         <tr>
             <td>{{ venda.data }}</td>
-            <td>R$ {{ venda.total }}</td>
+            <td>R$ {{ venda.total|moeda }}</td>
             <td>{{ venda.get_forma_pagamento_display }}</td>
             <td>{{ venda.desconto_percentual }}%</td>
-            <td>R$ {{ venda.saldo_devedor }}</td>
+            <td>R$ {{ venda.saldo_devedor|moeda }}</td>
             <td>
                 <a href="{% url 'detalhe_venda' venda.id %}" class="btn btn-sm btn-primary">Ver</a>
             </td>

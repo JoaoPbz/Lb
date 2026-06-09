@@ -1,4 +1,5 @@
 {% extends 'core/base.html' %}
+{% load filtros %}
 
 {% block title %}Estoque{% endblock %}
 
@@ -28,8 +29,8 @@
             <td>{{ produto.nome }}</td>
             <td>{{ produto.tamanho }}</td>
             <td>{{ produto.cor }}</td>
-            <td>R$ {{ produto.preco_venda }}</td>
-            <td>R$ {{ produto.preco_custo }}</td>
+            <td>R$ {{ produto.preco_venda|moeda }}</td>
+            <td>R$ {{ produto.preco_custo|moeda }}</td>
             <td>{{ produto.quantidade_estoque }}</td>
             <td>
                 <a href="{% url 'editar_produto' produto.id %}" class="btn btn-sm btn-warning">Editar</a>
