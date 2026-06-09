@@ -1,4 +1,5 @@
 {% extends 'core/base.html' %}
+{% load filtros %}
 
 {% block title %}Detalhe da Venda{% endblock %}
 
@@ -12,7 +13,7 @@
             <div class="col-md-3"><strong>Data:</strong> {{ venda.data }}</div>
             <div class="col-md-3"><strong>Pagamento:</strong> {{ venda.get_forma_pagamento_display }}</div>
             <div class="col-md-3"><strong>Desconto:</strong> {{ venda.desconto_percentual }}%</div>
-            <div class="col-md-3"><strong>Total:</strong> R$ {{ venda.total }}</div>
+            <div class="col-md-3"><strong>Total:</strong> {{ venda.total|moeda }}</div>
         </div>
 
         <hr>
@@ -33,7 +34,7 @@
                     <td>{{ item.produto.nome }}</td>
                     <td>{{ item.produto.tamanho }}</td>
                     <td>{{ item.produto.cor }}</td>
-                    <td>R$ {{ item.preco_unitario }}</td>
+                    <td>{{ item.preco_unitario|moeda }}</td>
                     <td>{{ item.quantidade }}</td>
                 </tr>
                 {% endfor %}
@@ -53,7 +54,7 @@
                 {% for pagamento in venda.pagamentos.all %}
                 <tr>
                     <td>{{ pagamento.data }}</td>
-                    <td>R$ {{ pagamento.valor }}</td>
+                    <td>{{ pagamento.valor|moeda }}</td>
                 </tr>
                 {% empty %}
                 <tr>

@@ -1,4 +1,5 @@
 {% extends 'core/base.html' %}
+{% load filtros %}
 
 {% block title %}Vendas{% endblock %}
 
@@ -32,11 +33,11 @@
         <tr>
             <td>{{ venda.cliente.nome }}</td>
             <td>{{ venda.data }}</td>
-            <td>R$ {{ venda.total }}</td>
+            <td>{{ venda.total|moeda }}</td>
             <td>{{ venda.desconto_percentual }}%</td>
             <td>{{ venda.get_forma_pagamento_display }}</td>
             <td>{{ venda.get_origem_display }}</td>
-            <td>R$ {{ venda.saldo_devedor }}</td>
+            <td>{{ venda.saldo_devedor|moeda }}</td>
             <td>
                 <a href="{% url 'detalhe_venda' venda.id %}" class="btn btn-sm btn-primary">Ver</a>
                 <a href="{% url 'excluir_venda' venda.id %}" class="btn btn-sm btn-danger">Excluir</a>
