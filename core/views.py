@@ -14,6 +14,7 @@ from openpyxl.styles import Font, PatternFill, Alignment
 import json
 import subprocess
 from django.utils import timezone
+from django.contrib import messages
 
 
 def clientes(request):
@@ -40,12 +41,15 @@ def editar_cliente(request, id):
 
 def excluir_cliente(request, id):
     cliente = get_object_or_404(Cliente, id=id)
+    if cliente.vendas.exists() or cliente.provas.exists():
+        messages.error(request, f'O cliente "{cliente.nome}" não pode ser excluído pois possui vendas ou provas vinculadas.')
+        return redirect('clientes')
     cliente.delete()
     return redirect('clientes')
 
 
 def produtos(request):
-    lista_produtos = Produto.objects.all()
+    lista_produtos = Produto.objects.filter(ativo=True)
     return render(request, 'core/produtos.html', {'produtos': lista_produtos})
 
 def editar_produto(request, id):
@@ -64,7 +68,8 @@ def editar_produto(request, id):
 
 def excluir_produto(request, id):
     produto = get_object_or_404(Produto, id=id)
-    produto.delete()
+    produto.ativo = False
+    produto.save()
     return redirect('produtos')
 
 
@@ -126,7 +131,7 @@ def nova_prova(request):
         return redirect('provas')
 
     clientes = Cliente.objects.all()
-    produtos = Produto.objects.filter(quantidade_estoque__gt=0)
+    produtos = Produto.objects.filter(quantidade_estoque__gt=0, ativo=True)
     return render(request, 'core/nova_prova.html', {'clientes': clientes, 'produtos': produtos})
 
 def detalhe_prova(request, id):
@@ -201,7 +206,7 @@ def nova_venda(request):
         return redirect('vendas')
 
     clientes = Cliente.objects.all()
-    produtos = Produto.objects.filter(quantidade_estoque__gt=0)
+    produtos = Produto.objects.filter(quantidade_estoque__gt=0, ativo=True)
     return render(request, 'core/nova_venda.html', {'clientes': clientes, 'produtos': produtos})
 
 def detalhe_venda(request, id):
@@ -489,3 +494,13 @@ def restaurar_backup(request):
         return redirect('dashboard')
 
     return render(request, 'core/restaurar_backup.html')
+
+def produtos_inativos(request):
+    lista_produtos = Produto.objects.filter(ativo=False)
+    return render(request, 'core/produtos_inativos.html', {'produtos': lista_produtos})
+
+def reativar_produto(request, id):
+    produto = get_object_or_404(Produto, id=id)
+    produto.ativo = True
+    produto.save()
+    return redirect('produtos_inativos')

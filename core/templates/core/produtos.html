@@ -6,7 +6,8 @@
 {% block content %}
 <div class="d-flex justify-content-between align-items-center mb-4">
     <h2>Estoque</h2>
-  <a href="{% url 'nova_compra' %}" class="btn btn-success">+ Nova Compra</a>
+    <a href="{% url 'produtos_inativos' %}" class="btn btn-outline-secondary">Inativos</a>
+    <a href="{% url 'nova_compra' %}" class="btn btn-success">+ Nova Compra</a>
 </div>
 
 <table class="table table-striped table-hover">

@@ -32,4 +32,6 @@ urlpatterns = [
     path('clientes/exportar/', views.exportar_clientes_excel, name='exportar_clientes_excel'),
     path('backup/', views.backup, name='backup'),
     path('restaurar/', views.restaurar_backup, name='restaurar_backup'),
+    path('produtos/inativos/', views.produtos_inativos, name='produtos_inativos'),
+    path('produtos/<int:id>/reativar/', views.reativar_produto, name='reativar_produto'),
 ]

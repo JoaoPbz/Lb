@@ -13,28 +13,38 @@
 <body>
 
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-    <div class="container-fluid">
-        <a class="navbar-brand" href="#">LB Finanças</a>
-        <div class="collapse navbar-collapse">
-            <ul class="navbar-nav me-auto">
-                <li class="nav-item"><a class="nav-link" href="{% url 'dashboard' %}">Dashboard</a></li>
-                <li class="nav-item"><a class="nav-link" href="{% url 'produtos' %}">Estoque</a></li>
-                <li class="nav-item"><a class="nav-link" href="{% url 'clientes' %}">Clientes</a></li>
-                <li class="nav-item"><a class="nav-link" href="{% url 'provas' %}">Provas</a></li>
-                <li class="nav-item"><a class="nav-link" href="{% url 'vendas' %}">Vendas</a></li>
-                <li class="nav-item"><a class="nav-link" href="{% url 'despesas' %}">Despesas</a></li>
-                <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle text-warning" href="#" data-bs-toggle="dropdown">💾 Backup</a>
-                    <ul class="dropdown-menu">
-                        <li><a class="dropdown-item" href="{% url 'backup' %}">Exportar Backup</a></li>
-                        <li><a class="dropdown-item" href="{% url 'restaurar_backup' %}">Restaurar Backup</a></li>
-                    </ul>
-                </li>
-            </ul>
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#">LB Finanças</a>
+            <div class="collapse navbar-collapse">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item"><a class="nav-link" href="{% url 'dashboard' %}">Dashboard</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{% url 'produtos' %}">Estoque</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{% url 'clientes' %}">Clientes</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{% url 'provas' %}">Provas</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{% url 'vendas' %}">Vendas</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{% url 'despesas' %}">Despesas</a></li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle text-warning" href="#" data-bs-toggle="dropdown">💾
+                            Backup</a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="{% url 'backup' %}">Exportar Backup</a></li>
+                            <li><a class="dropdown-item" href="{% url 'restaurar_backup' %}">Restaurar Backup</a></li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
         </div>
+    </nav>
+    {% if messages %}
+    <div class="container mt-3">
+        {% for message in messages %}
+        <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+        {% endfor %}
     </div>
-</nav>
-
+    {% endif %}
     <div class="container mt-4">
         {% block content %}
         {% endblock %}
@@ -44,3 +54,14 @@
 </body>
 
 </html>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const hoje = new Date().toISOString().split('T')[0];
+        document.querySelectorAll('input[type="date"]').forEach(function (input) {
+            if (!input.value) {
+                input.value = hoje;
+            }
+        });
+    });
+</script>

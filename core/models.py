@@ -19,6 +19,7 @@ class Produto(models.Model):
     preco_venda = models.DecimalField(max_digits=10, decimal_places=2)
     quantidade_estoque = models.IntegerField(default=0)
     compra = models.ForeignKey(Compra, on_delete=models.SET_NULL, null=True, blank=True, related_name='produtos')
+    ativo = models.BooleanField(default=True)
 
     def __str__(self):
         return f"{self.nome} - {self.tamanho} {self.cor}"
