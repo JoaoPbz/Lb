@@ -1,5 +1,5 @@
 from datetime import date
-from .models import Venda, Pagamento, Despesa, Compra
+from .repositories import VendaRepository, PagamentoRepository, DespesaRepository, CompraRepository
 
 
 class ClienteService:
@@ -38,16 +38,16 @@ class VendaService:
 
     @staticmethod
     def registrar_pagamento(venda, data, valor):
-        return Pagamento.objects.create(venda=venda, data=data, valor=valor)
+        return PagamentoRepository.criar(venda=venda, data=data, valor=valor)
 
 
 class RelatorioService:
 
     @staticmethod
     def calcular_resumo_mensal(mes, ano):
-        vendas = Venda.objects.filter(data__month=mes, data__year=ano)
-        despesas = Despesa.objects.filter(data__month=mes, data__year=ano)
-        compras = Compra.objects.filter(data__month=mes, data__year=ano)
+        vendas = VendaRepository.filtrar_por_mes_ano(mes, ano)
+        despesas = DespesaRepository.filtrar_por_mes_ano(mes, ano)
+        compras = CompraRepository.filtrar_por_mes_ano(mes, ano)
 
         total_vendido = sum(v.total for v in vendas)
         total_despesas = sum(d.valor for d in despesas)
