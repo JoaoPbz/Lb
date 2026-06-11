@@ -72,8 +72,7 @@ O projeto segue o padrão **MVC/MTV** do Django, com separação de responsabili
 
 ```bash
 # 1. Clone o repositório
-git clone https://github.com/seu-usuario/seu-repositorio.git
-cd seu-repositorio
+git clone https://github.com/JoaoPbz/SistemaGestaoProgIII.git
 
 # 2. Crie e ative o ambiente virtual
 python -m venv venv
