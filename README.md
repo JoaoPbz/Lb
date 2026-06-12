@@ -60,13 +60,15 @@ O projeto segue o padrão **MVC/MTV** do Django, com separação de responsabili
 
 ---
 
+
 ## Como Rodar Localmente
 
 ### Pré-requisitos
 
 - Python 3.13+
 - PostgreSQL
-- Juntamente dos demais em requirements.txt
+- Git
+- Demais dependências em `requirements.txt`
 
 ### Instalação
 
@@ -74,42 +76,56 @@ O projeto segue o padrão **MVC/MTV** do Django, com separação de responsabili
 # 1. Clone o repositório
 git clone https://github.com/JoaoPbz/SistemaGestaoProgIII.git
 
-# 2. Crie e ative o ambiente virtual
+# 2. Entre na pasta do projeto
+cd SistemaGestaoProgIII
+
+# 3. Crie e ative o ambiente virtual
 python -m venv venv
 venv\Scripts\activate  # Windows
 # source venv/bin/activate  # Linux/Mac
 
-# 3. Instale as dependências
+# 4. Instale as dependências
 pip install -r requirements.txt
 
-# 4. Configure as variáveis de ambiente
-# Copie o arquivo de exemplo e preencha com seus dados
+# 5. Configure as variáveis de ambiente
 cp .env.example .env
+# Abra o arquivo .env e preencha com seus dados (veja seção abaixo)
 
-# 5. Execute as migrações
+# 6. Crie o banco de dados no PostgreSQL
+# CREATE DATABASE nome_do_banco;
+
+# 7. Execute as migrações
 python manage.py migrate
 
-# 6. Inicie o servidor
+# 8. Inicie o servidor
 python manage.py runserver
 ```
 
-Acesse em: [http://127.0.0.1:8000](http://127.0.0.1:8000)
+Acesse em: http://127.0.0.1:8000
 
 ### Variáveis de Ambiente
 
 Crie um arquivo `.env` na raiz do projeto com base no `.env.example`:
 
-```env
-SECRET_KEY=
-DB_NAME=
-DB_USER=
-DB_PASSWORD=
+```
+# Pode usar qualquer string longa para desenvolvimento local
+SECRET_KEY=coloque-qualquer-string-longa-aqui-para-dev
+
+DB_NAME=nome_do_banco
+DB_USER=seu_user
+DB_PASSWORD=sua_senha
 DB_HOST=localhost
 DB_PORT=5432
 DEBUG=True
 ```
 
----
+### Observação — Windows (PowerShell)
+
+Se aparecer erro ao ativar o ambiente virtual, rode antes:
+
+```bash
+Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
+```
 
 ## Estrutura do Banco de Dados
 
