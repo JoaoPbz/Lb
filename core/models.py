@@ -22,7 +22,7 @@ class Produto(models.Model):
     ativo = models.BooleanField(default=True)
 
     class Meta:
-        unique_together = ('codigo_marca', 'tamanho')
+        unique_together = ('codigo_marca', 'tamanho', 'cor')
 
     def __str__(self):
         return f"{self.nome} - {self.tamanho} {self.cor}"
