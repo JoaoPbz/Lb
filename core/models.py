@@ -11,7 +11,7 @@ class Compra(models.Model):
 
 
 class Produto(models.Model):
-    codigo_marca = models.CharField(max_length=50, unique=True)
+    codigo_marca = models.CharField(max_length=50) 
     nome = models.CharField(max_length=100)
     tamanho = models.CharField(max_length=10)
     cor = models.CharField(max_length=30)
@@ -20,6 +20,9 @@ class Produto(models.Model):
     quantidade_estoque = models.IntegerField(default=0)
     compra = models.ForeignKey(Compra, on_delete=models.SET_NULL, null=True, blank=True, related_name='produtos')
     ativo = models.BooleanField(default=True)
+
+    class Meta:
+        unique_together = ('codigo_marca', 'tamanho')
 
     def __str__(self):
         return f"{self.nome} - {self.tamanho} {self.cor}"

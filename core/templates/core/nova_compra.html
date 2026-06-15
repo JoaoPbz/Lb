@@ -63,7 +63,7 @@
                                 <div class="col-md-2">
                                     <label class="form-label">Quantidade</label>
                                     <input type="number" name="quantidade[]" class="form-control" placeholder="1"
-                                        min="1" value="1" required>
+                                        min="1" value="1" required oninput="calcularTotal()">
                                 </div>
                                 <div class="col-md-4">
                                     <button type="button" class="btn btn-danger w-100"
@@ -97,6 +97,7 @@
         const nova = primeira.cloneNode(true);
         nova.querySelectorAll('input').forEach(i => i.value = '');
         nova.querySelectorAll('input[name="preco_custo[]"]').forEach(i => i.setAttribute('oninput', 'calcularTotal()'));
+        nova.querySelectorAll('input[name="quantidade[]"]').forEach(i => i.setAttribute('oninput', 'calcularTotal()'));
         container.appendChild(nova);
     }
 
@@ -110,8 +111,13 @@
 
     function calcularTotal() {
         const custos = document.querySelectorAll('input[name="preco_custo[]"]');
+        const qtds = document.querySelectorAll('input[name="quantidade[]"]');
         let total = 0;
-        custos.forEach(i => total += parseFloat(i.value) || 0);
+        custos.forEach((input, i) => {
+            const custo = parseFloat(input.value) || 0;
+            const qtd = parseInt(qtds[i].value) || 0;
+            total += custo * qtd;
+        });
         document.getElementById('total-custo').textContent = total.toFixed(2);
     }
 </script>

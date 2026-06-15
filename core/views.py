@@ -87,7 +87,8 @@ def nova_compra(request):
         precos_venda = request.POST.getlist('preco_venda[]')
         quantidades = request.POST.getlist('quantidade[]')
 
-        total = sum(float(p) for p in precos_custo)
+        total = sum(float(precos_custo[i]) * int(quantidades[i]) for i in range(len(codigos)))
+
 
         compra = Compra.objects.create(data=data, valor_total=total, observacoes=observacoes)
 
