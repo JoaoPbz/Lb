@@ -142,8 +142,35 @@ def detalhe_prova(request, id):
 def resolver_prova(request, id):
     prova = get_object_or_404(Prova, id=id)
     if request.method == 'POST':
-        prova.status = request.POST.get('status')
+        novo_status = request.POST.get('status')
+        prova.status = novo_status
         prova.save()
+
+        if novo_status == 'convertida':
+            venda = Venda.objects.create(
+                cliente=prova.cliente,
+                data=date.today(),
+                origem='prova',
+                forma_pagamento='fiado',
+                desconto_percentual=0,
+                total=0
+            )
+
+            total = 0
+            for item in prova.itens.all():
+                ItemVenda.objects.create(
+                    venda=venda,
+                    produto=item.produto,
+                    quantidade=1,
+                    preco_unitario=item.produto.preco_venda
+                )
+                item.produto.quantidade_estoque -= 1
+                item.produto.save()
+                total += item.produto.preco_venda
+
+            venda.total = total
+            venda.save()
+
         return redirect('detalhe_prova', id=prova.id)
     return redirect('provas')
 
