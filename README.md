@@ -142,6 +142,13 @@ Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
 | `Despesa` | Registro de despesas por categoria |
 
 ---
+## Dados de Exemplo
+
+Para facilitar a avaliação, o repositório inclui um arquivo de backup com dados pré-cadastrados em `Backup Alimentado/backup_20260615_193932.json`.
+
+Para importar, acesse o sistema e vá em **Backup > Importar**, selecione o arquivo e confirme.
+
+---
 
 ## Integrantes
 
