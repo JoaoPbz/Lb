@@ -15,6 +15,7 @@ import json
 import subprocess
 from django.utils import timezone
 from django.contrib import messages
+from decimal import Decimal
 
 
 def clientes(request):
@@ -147,31 +148,34 @@ def resolver_prova(request, id):
         prova.save()
 
         if novo_status == 'convertida':
-            venda = Venda.objects.create(
-                cliente=prova.cliente,
-                data=date.today(),
-                origem='prova',
-                forma_pagamento='fiado',
-                desconto_percentual=0,
-                total=0
-            )
+         forma_pagamento = request.POST.get('forma_pagamento', 'fiado')
+    desconto_percentual = int(request.POST.get('desconto_percentual', 0))
+    venda = Venda.objects.create(
+        cliente=prova.cliente,
+        data=date.today(),
+        origem='prova',
+        forma_pagamento=forma_pagamento,
+        desconto_percentual=desconto_percentual,
+        total=0
+    )
 
-            total = 0
-            for item in prova.itens.all():
-                ItemVenda.objects.create(
-                    venda=venda,
-                    produto=item.produto,
-                    quantidade=1,
-                    preco_unitario=item.produto.preco_venda
-                )
-                item.produto.quantidade_estoque -= 1
-                item.produto.save()
-                total += item.produto.preco_venda
+    total = 0
+    for item in prova.itens.all():
+        ItemVenda.objects.create(
+            venda=venda,
+            produto=item.produto,
+            quantidade=1,
+            preco_unitario=item.produto.preco_venda
+        )
+        item.produto.quantidade_estoque -= 1
+        item.produto.save()
+        total += item.produto.preco_venda
 
-            venda.total = total
-            venda.save()
+    total = total * (1 - Decimal(desconto_percentual) / 100)
+    venda.total = total
+    venda.save()
 
-        return redirect('detalhe_prova', id=prova.id)
+    return redirect('detalhe_prova', id=prova.id)
     return redirect('provas')
 
 def excluir_prova(request, id):

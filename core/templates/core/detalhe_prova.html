@@ -9,11 +9,11 @@
         <h5 class="mb-0">Prova — {{ prova.cliente.nome }}</h5>
         <span>
             {% if prova.status == 'em_prova' %}
-                <span class="badge bg-warning text-dark">Em Prova</span>
+            <span class="badge bg-warning text-dark">Em Prova</span>
             {% elif prova.status == 'devolvida' %}
-                <span class="badge bg-secondary">Devolvida</span>
+            <span class="badge bg-secondary">Devolvida</span>
             {% else %}
-                <span class="badge bg-success">Convertida em Venda</span>
+            <span class="badge bg-success">Convertida em Venda</span>
             {% endif %}
         </span>
     </div>
@@ -51,13 +51,45 @@
             {% csrf_token %}
             <div class="mb-3">
                 <label class="form-label">Atualizar Status</label>
-                <select name="status" class="form-select">
+                <select name="status" class="form-select" id="statusSelect" onchange="togglePagamento()">
                     <option value="devolvida">Devolvida</option>
                     <option value="convertida">Convertida em Venda</option>
                 </select>
             </div>
+            <div class="mb-3" id="campoPagamento" style="display:none;">
+                <label class="form-label">Forma de Pagamento</label>
+                <select name="forma_pagamento" class="form-select" id="pagamentoSelect" onchange="toggleDesconto()">
+                    <option value="fiado">Fiado</option>
+                    <option value="avista">À Vista</option>
+                </select>
+            </div>
+            <div class="mb-3" id="campoDesconto" style="display:none;">
+                <label class="form-label">Desconto</label>
+                <select name="desconto_percentual" class="form-select">
+                    <option value="0">Sem desconto</option>
+                    <option value="5">5%</option>
+                    <option value="10">10%</option>
+                </select>
+            </div>
             <button type="submit" class="btn btn-success">Confirmar</button>
         </form>
+
+        <script>
+            function togglePagamento() {
+                const status = document.getElementById('statusSelect').value;
+                const mostrar = status === 'convertida' ? 'block' : 'none';
+                document.getElementById('campoPagamento').style.display = mostrar;
+
+                const pagamento = document.getElementById('pagamentoSelect').value;
+                document.getElementById('campoDesconto').style.display = (mostrar === 'block' && pagamento === 'avista') ? 'block' : 'none';
+            }
+
+            function toggleDesconto() {
+                const pagamento = document.getElementById('pagamentoSelect').value;
+                document.getElementById('campoDesconto').style.display = pagamento === 'avista' ? 'block' : 'none';
+            }
+
+        </script>
         {% endif %}
 
         <div class="mt-3">
