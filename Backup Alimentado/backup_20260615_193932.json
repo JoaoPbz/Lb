@@ -1,0 +1,279 @@
+{
+  "Cliente": [
+    {
+      "model": "core.cliente",
+      "pk": 1,
+      "fields": {
+        "nome": "Loide",
+        "telefone": "111111111111"
+      }
+    },
+    {
+      "model": "core.cliente",
+      "pk": 2,
+      "fields": {
+        "nome": "Bruna",
+        "telefone": "222222222222"
+      }
+    },
+    {
+      "model": "core.cliente",
+      "pk": 3,
+      "fields": {
+        "nome": "Sofia",
+        "telefone": "333333333333"
+      }
+    },
+    {
+      "model": "core.cliente",
+      "pk": 4,
+      "fields": {
+        "nome": "Ezadi",
+        "telefone": "444444444444"
+      }
+    }
+  ],
+  "Produto": [
+    {
+      "model": "core.produto",
+      "pk": 1,
+      "fields": {
+        "codigo_marca": "4525",
+        "nome": "Pijama de lã Izzy",
+        "tamanho": "M",
+        "cor": "Cinza",
+        "preco_custo": "50.00",
+        "preco_venda": "65.00",
+        "quantidade_estoque": 5,
+        "compra": 1,
+        "ativo": true
+      }
+    },
+    {
+      "model": "core.produto",
+      "pk": 4,
+      "fields": {
+        "codigo_marca": "4425",
+        "nome": "Lingerie Maltra",
+        "tamanho": "M",
+        "cor": "Vermelha",
+        "preco_custo": "50.00",
+        "preco_venda": "60.00",
+        "quantidade_estoque": 3,
+        "compra": 1,
+        "ativo": true
+      }
+    },
+    {
+      "model": "core.produto",
+      "pk": 3,
+      "fields": {
+        "codigo_marca": "4556",
+        "nome": "Saia Com Babado Leve",
+        "tamanho": "M",
+        "cor": "Preta",
+        "preco_custo": "40.00",
+        "preco_venda": "50.00",
+        "quantidade_estoque": 1,
+        "compra": 1,
+        "ativo": true
+      }
+    },
+    {
+      "model": "core.produto",
+      "pk": 2,
+      "fields": {
+        "codigo_marca": "4525",
+        "nome": "Pijama de lã Izzy",
+        "tamanho": "GG",
+        "cor": "Cinza",
+        "preco_custo": "55.00",
+        "preco_venda": "70.00",
+        "quantidade_estoque": 4,
+        "compra": 1,
+        "ativo": true
+      }
+    }
+  ],
+  "Compra": [
+    {
+      "model": "core.compra",
+      "pk": 1,
+      "fields": {
+        "data": "2026-06-15",
+        "valor_total": "795.00",
+        "observacoes": "Estoque novo de Junho "
+      }
+    }
+  ],
+  "Prova": [
+    {
+      "model": "core.prova",
+      "pk": 1,
+      "fields": {
+        "cliente": 1,
+        "data_saida": "2026-06-15",
+        "data_devolucao_prevista": "2026-06-26",
+        "status": "em_prova"
+      }
+    },
+    {
+      "model": "core.prova",
+      "pk": 2,
+      "fields": {
+        "cliente": 2,
+        "data_saida": "2026-06-15",
+        "data_devolucao_prevista": "2026-06-17",
+        "status": "convertida"
+      }
+    },
+    {
+      "model": "core.prova",
+      "pk": 3,
+      "fields": {
+        "cliente": 4,
+        "data_saida": "2026-06-15",
+        "data_devolucao_prevista": "2026-06-24",
+        "status": "convertida"
+      }
+    }
+  ],
+  "ItemProva": [
+    {
+      "model": "core.itemprova",
+      "pk": 1,
+      "fields": {
+        "prova": 1,
+        "produto": 1
+      }
+    },
+    {
+      "model": "core.itemprova",
+      "pk": 2,
+      "fields": {
+        "prova": 2,
+        "produto": 3
+      }
+    },
+    {
+      "model": "core.itemprova",
+      "pk": 3,
+      "fields": {
+        "prova": 3,
+        "produto": 3
+      }
+    }
+  ],
+  "Venda": [
+    {
+      "model": "core.venda",
+      "pk": 1,
+      "fields": {
+        "cliente": 2,
+        "data": "2026-06-15",
+        "total": "50.00",
+        "origem": "prova",
+        "forma_pagamento": "fiado",
+        "desconto_percentual": 0
+      }
+    },
+    {
+      "model": "core.venda",
+      "pk": 2,
+      "fields": {
+        "cliente": 4,
+        "data": "2026-06-15",
+        "total": "50.00",
+        "origem": "prova",
+        "forma_pagamento": "fiado",
+        "desconto_percentual": 0
+      }
+    },
+    {
+      "model": "core.venda",
+      "pk": 3,
+      "fields": {
+        "cliente": 3,
+        "data": "2026-06-15",
+        "total": "63.00",
+        "origem": "direta",
+        "forma_pagamento": "avista",
+        "desconto_percentual": 10
+      }
+    }
+  ],
+  "ItemVenda": [
+    {
+      "model": "core.itemvenda",
+      "pk": 1,
+      "fields": {
+        "venda": 1,
+        "produto": 3,
+        "quantidade": 1,
+        "preco_unitario": "50.00"
+      }
+    },
+    {
+      "model": "core.itemvenda",
+      "pk": 2,
+      "fields": {
+        "venda": 2,
+        "produto": 3,
+        "quantidade": 1,
+        "preco_unitario": "50.00"
+      }
+    },
+    {
+      "model": "core.itemvenda",
+      "pk": 3,
+      "fields": {
+        "venda": 3,
+        "produto": 2,
+        "quantidade": 1,
+        "preco_unitario": "70.00"
+      }
+    }
+  ],
+  "Pagamento": [
+    {
+      "model": "core.pagamento",
+      "pk": 1,
+      "fields": {
+        "venda": 2,
+        "data": "2026-06-15",
+        "valor": "50.00"
+      }
+    },
+    {
+      "model": "core.pagamento",
+      "pk": 2,
+      "fields": {
+        "venda": 3,
+        "data": "2026-06-15",
+        "valor": "63.00"
+      }
+    }
+  ],
+  "Despesa": [
+    {
+      "model": "core.despesa",
+      "pk": 1,
+      "fields": {
+        "descricao": "Mensalidade Mei",
+        "valor": "80.00",
+        "data": "2026-06-15",
+        "categoria": "MEI"
+      }
+    },
+    {
+      "model": "core.despesa",
+      "pk": 2,
+      "fields": {
+        "descricao": "Frete do Estoque de Junho",
+        "valor": "50.00",
+        "data": "2026-06-15",
+        "categoria": "Frete"
+      }
+    }
+  ]
+}
