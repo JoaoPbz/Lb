@@ -156,7 +156,7 @@ Para importar, acesse o sistema e vá em **Backup > Restaurar Backup**, selecion
 - Everton Nathan Dias De Oliveira
 - Rafael Gustavo Vivian
 - Mauricio Campanholo Bairos
-- Thiago Da Luz
+- Tiago Da Luz
 - Gabriel Morin Werner
 
 
