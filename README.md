@@ -146,7 +146,7 @@ Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
 
 Para facilitar a avaliação, fizemos um arquivo de backup com dados pré-cadastrados em `Backup Alimentado/backup_20260615_193932.json`.
 
-Para importar, acesse o sistema e vá em **Backup > Restaurar Backup**, selecione o arquivo e confirme.
+Para importar, acesse o sistema e vá em **Backup > Restaurar Backup**,selecione o arquivo e confirme.
 
 ---
 
