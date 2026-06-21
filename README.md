@@ -10,7 +10,7 @@ A ideia surgiu de uma necessidade real de uma microempreendedora familiar de um 
 
 ---
 
-## Tecnologias Utilizadas
+## Tecnologias Utilizada
 
 | Camada | Tecnologia |
 |---|---|
