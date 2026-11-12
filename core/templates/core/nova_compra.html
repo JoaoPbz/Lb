@@ -1,11 +1,10 @@
 {% extends 'core/base.html' %}
-{% load filtros %}
 
 {% block title %}Nova Compra{% endblock %}
 
 {% block content %}
 <div class="row justify-content-center">
-    <div class="col-md-8">
+    <div class="col-lg-9">
         <div class="card">
             <div class="card-header bg-dark text-white">
                 <h5 class="mb-0">Nova Compra</h5>
@@ -24,60 +23,62 @@
 
                     <hr>
                     <h6>Produtos desta compra</h6>
+                    <p class="text-muted small">
+                        Se o produto já estiver cadastrado (mesmo código, tamanho e cor), a quantidade é somada
+                        ao estoque e os preços são atualizados.
+                    </p>
 
                     <div id="produtos-container">
                         <div class="border rounded p-3 mb-3 produto-row">
                             <div class="row g-2 mb-2">
                                 <div class="col-md-4">
                                     <label class="form-label">Código</label>
-                                    <input type="text" name="codigo_marca[]" class="form-control"
+                                    <input type="text" name="codigo_marca[]" class="form-control" maxlength="50"
                                         placeholder="Código da marca" required>
                                 </div>
                                 <div class="col-md-4">
                                     <label class="form-label">Nome</label>
-                                    <input type="text" name="nome[]" class="form-control" placeholder="Nome do produto"
-                                        required>
+                                    <input type="text" name="nome[]" class="form-control" maxlength="100"
+                                        placeholder="Nome do produto" required>
                                 </div>
                                 <div class="col-md-2">
                                     <label class="form-label">Tamanho</label>
-                                    <input type="text" name="tamanho[]" class="form-control" placeholder="Ex: M, G, 42"
-                                        required>
+                                    <input type="text" name="tamanho[]" class="form-control" maxlength="10"
+                                        placeholder="Ex: M, G, 42" required>
                                 </div>
                                 <div class="col-md-2">
                                     <label class="form-label">Cor</label>
-                                    <input type="text" name="cor[]" class="form-control" placeholder="Ex: Azul"
-                                        required>
+                                    <input type="text" name="cor[]" class="form-control" maxlength="30"
+                                        placeholder="Ex: Azul" required>
                                 </div>
                             </div>
                             <div class="row g-2 align-items-end">
                                 <div class="col-md-3">
                                     <label class="form-label">Preço de Custo</label>
-                                    <input type="number" step="0.01" name="preco_custo[]" class="form-control"
-                                        placeholder="0.00" required oninput="calcularTotal()">
+                                    <input type="number" step="0.01" min="0" name="preco_custo[]" class="form-control"
+                                        placeholder="0.00" required>
                                 </div>
                                 <div class="col-md-3">
                                     <label class="form-label">Preço de Venda</label>
-                                    <input type="number" step="0.01" name="preco_venda[]" class="form-control"
+                                    <input type="number" step="0.01" min="0" name="preco_venda[]" class="form-control"
                                         placeholder="0.00" required>
                                 </div>
                                 <div class="col-md-2">
                                     <label class="form-label">Quantidade</label>
-                                    <input type="number" name="quantidade[]" class="form-control" placeholder="1"
-                                        min="1" value="1" required oninput="calcularTotal()">
+                                    <input type="number" name="quantidade[]" class="form-control" min="1" value="1"
+                                        required>
                                 </div>
                                 <div class="col-md-4">
-                                    <button type="button" class="btn btn-danger w-100"
-                                        onclick="removerLinha(this)">Remover Produto</button>
+                                    <button type="button" class="btn btn-outline-danger w-100 remover">Remover Produto</button>
                                 </div>
                             </div>
                         </div>
                     </div>
 
-                    <button type="button" class="btn btn-secondary mb-3" onclick="adicionarLinha()">+ Adicionar
-                        Produto</button>
+                    <button type="button" class="btn btn-secondary mb-3" id="adicionar">+ Adicionar Produto</button>
 
                     <div class="alert alert-info">
-                        <strong>Total de Custo: R$ <span id="total-custo">0.00</span></strong>
+                        <strong>Total de Custo: R$ <span id="total-custo">0,00</span></strong>
                     </div>
 
                     <div class="d-flex gap-2">
@@ -89,36 +90,37 @@
         </div>
     </div>
 </div>
+{% endblock %}
 
+{% block scripts %}
 <script>
-    function adicionarLinha() {
-        const container = document.getElementById('produtos-container');
-        const primeira = container.querySelector('.produto-row');
-        const nova = primeira.cloneNode(true);
-        nova.querySelectorAll('input').forEach(i => i.value = '');
-        nova.querySelectorAll('input[name="preco_custo[]"]').forEach(i => i.setAttribute('oninput', 'calcularTotal()'));
-        nova.querySelectorAll('input[name="quantidade[]"]').forEach(i => i.setAttribute('oninput', 'calcularTotal()'));
-        container.appendChild(nova);
-    }
-
-    function removerLinha(btn) {
-        const container = document.getElementById('produtos-container');
-        if (container.querySelectorAll('.produto-row').length > 1) {
-            btn.closest('.produto-row').remove();
-            calcularTotal();
-        }
-    }
+    const container = document.getElementById('produtos-container');
+    const formatar = valor => valor.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 
     function calcularTotal() {
-        const custos = document.querySelectorAll('input[name="preco_custo[]"]');
-        const qtds = document.querySelectorAll('input[name="quantidade[]"]');
         let total = 0;
-        custos.forEach((input, i) => {
-            const custo = parseFloat(input.value) || 0;
-            const qtd = parseInt(qtds[i].value) || 0;
+        container.querySelectorAll('.produto-row').forEach(function (linha) {
+            const custo = parseFloat(linha.querySelector('[name="preco_custo[]"]').value) || 0;
+            const qtd = parseInt(linha.querySelector('[name="quantidade[]"]').value) || 0;
             total += custo * qtd;
         });
-        document.getElementById('total-custo').textContent = total.toFixed(2);
+        document.getElementById('total-custo').textContent = formatar(total);
     }
+
+    document.getElementById('adicionar').addEventListener('click', function () {
+        const nova = container.querySelector('.produto-row').cloneNode(true);
+        nova.querySelectorAll('input').forEach(i => i.value = i.name === 'quantidade[]' ? '1' : '');
+        container.appendChild(nova);
+        calcularTotal();
+    });
+
+    container.addEventListener('click', function (e) {
+        if (e.target.classList.contains('remover') && container.querySelectorAll('.produto-row').length > 1) {
+            e.target.closest('.produto-row').remove();
+            calcularTotal();
+        }
+    });
+
+    container.addEventListener('input', calcularTotal);
 </script>
 {% endblock %}

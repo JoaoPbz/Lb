@@ -20,7 +20,7 @@
                         <input type="file" name="arquivo" accept=".json" class="form-control" required>
                     </div>
                     <div class="d-flex gap-2">
-                        <button type="submit" class="btn btn-danger">Restaurar</button>
+                        <button type="submit" class="btn btn-danger" data-confirm="Isso vai APAGAR todos os dados atuais e substituir pelos do arquivo. Continuar?">Restaurar</button>
                         <a href="{% url 'dashboard' %}" class="btn btn-secondary">Cancelar</a>
                     </div>
                 </form>

@@ -1,0 +1,8 @@
+{% if prova.status == 'em_prova' %}
+<span class="badge bg-warning text-dark">Em Prova</span>
+{% if prova.data_devolucao_prevista and prova.data_devolucao_prevista < hoje %}<span class="badge bg-danger">Atrasada</span>{% endif %}
+{% elif prova.status == 'devolvida' %}
+<span class="badge bg-secondary">Devolvida</span>
+{% else %}
+<span class="badge bg-success">Convertida em Venda</span>
+{% endif %}

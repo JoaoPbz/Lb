@@ -33,6 +33,15 @@ O projeto segue o padrão **MVC/MTV** do Django, com separação de responsabili
 - **Service Layer** — camada de serviço responsável pelas regras de negócio, desacoplada das views
 - **Repository** — abstração do acesso aos dados, separando as queries das regras de negócio
 
+| Arquivo | Responsabilidade |
+|---|---|
+| `core/models.py` | Entidades e relacionamentos |
+| `core/repositories.py` | Consultas (saldo devedor, estoque disponível, reservas em prova, totais do período) |
+| `core/services.py` | Regras de negócio, sempre em transação (`transaction.atomic`) |
+| `core/forms.py` | Validação dos cadastros simples (cliente, produto, despesa) |
+| `core/backup.py` / `core/exportacao.py` | Backup/restauração e planilhas Excel |
+| `core/views.py` | Recebe a requisição, chama o serviço e renderiza o template |
+
 ---
 
 ## Design Patterns Aplicados
@@ -47,15 +56,16 @@ O projeto segue o padrão **MVC/MTV** do Django, com separação de responsabili
 
 ## Funcionalidades
 
-- Cadastro e controle de produtos e estoque
-- Registro de compras (lotes)
+- Cadastro e controle de produtos e estoque (estoque, peças em prova e disponível)
+- Registro de compras (lotes) — recomprar um produto existente soma ao estoque
 - Gerenciamento de clientes
-- Controle de provas (em prova / devolvida / convertida)
-- Registro de vendas diretas e vendas originadas de provas
-- Controle de pagamentos (incluindo pagamentos parciais e fiado)
+- Controle de provas: as peças ficam reservadas e, ao resolver, a cliente pode ficar com parte delas
+- Registro de vendas diretas (com quantidade) e vendas originadas de provas
+- Controle de pagamentos (incluindo pagamentos parciais e fiado), limitado ao saldo devedor
 - Registro de despesas
+- Dashboard mensal com faturamento, custo das peças vendidas (CMV), lucro líquido, recebido, saldo de caixa e fiado a receber
 - Exportação de extrato de clientes em Excel
-- Backup e restauração de dados (exportar/importar)
+- Backup e restauração de dados (exportar/importar), tudo-ou-nada
 - Cálculo dinâmico de saldo devedor e total anual por cliente
 
 ---
@@ -118,6 +128,14 @@ DB_HOST=localhost
 DB_PORT=5432
 DEBUG=True
 ```
+
+### Testes automatizados
+
+```bash
+python manage.py test core
+```
+
+Os testes ficam em `core/tests/` e usam um banco temporário criado pelo Django (o usuário do PostgreSQL precisa de permissão para criar bancos).
 
 ### Observação — Windows (PowerShell)
 

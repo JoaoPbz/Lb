@@ -1,5 +1,4 @@
 {% extends 'core/base.html' %}
-{% load filtros %}
 
 {% block title %}Editar Produto{% endblock %}
 
@@ -9,41 +8,21 @@
         <h5 class="mb-0">Editar Produto</h5>
     </div>
     <div class="card-body">
-        <form method="post">
+        <form method="post" novalidate>
             {% csrf_token %}
+            {% for erro in form.non_field_errors %}<div class="alert alert-danger">{{ erro }}</div>{% endfor %}
             <div class="row">
-                <div class="col-md-6 mb-3">
-                    <label class="form-label">Código da Marca</label>
-                    <input type="text" name="codigo_marca" class="form-control form-control-lg" value="{{ produto.codigo_marca }}" required>
-                </div>
-                <div class="col-md-6 mb-3">
-                    <label class="form-label">Nome</label>
-                    <input type="text" name="nome" class="form-control form-control-lg" value="{{ produto.nome }}" required>
-                </div>
-                <div class="col-md-3 mb-3">
-                    <label class="form-label">Tamanho</label>
-                    <input type="text" name="tamanho" class="form-control form-control-lg" value="{{ produto.tamanho }}" required>
-                </div>
-                <div class="col-md-3 mb-3">
-                    <label class="form-label">Cor</label>
-                    <input type="text" name="cor" class="form-control form-control-lg" value="{{ produto.cor }}" required>
-                </div>
-                <div class="col-md-3 mb-3">
-                    <label class="form-label">Preço de Custo</label>
-                    <input type="number" step="0.01" name="preco_custo" class="form-control form-control-lg" value="{{ produto.preco_custo|moeda }}" required>
-                </div>
-                <div class="col-md-3 mb-3">
-                    <label class="form-label">Preço de Venda</label>
-                    <input type="number" step="0.01" name="preco_venda" class="form-control form-control-lg" value="{{ produto.preco_venda|moeda }}" required>
-                </div>
-                <div class="col-md-3 mb-3">
-                    <label class="form-label">Quantidade em Estoque</label>
-                    <input type="number" name="quantidade_estoque" class="form-control form-control-lg" value="{{ produto.quantidade_estoque }}" required>
-                </div>
+                {% include 'core/_campo.html' with campo=form.codigo_marca %}
+                {% include 'core/_campo.html' with campo=form.nome %}
+                {% include 'core/_campo.html' with campo=form.tamanho col='col-md-3' %}
+                {% include 'core/_campo.html' with campo=form.cor col='col-md-3' %}
+                {% include 'core/_campo.html' with campo=form.preco_custo col='col-md-3' %}
+                {% include 'core/_campo.html' with campo=form.preco_venda col='col-md-3' %}
+                {% include 'core/_campo.html' with campo=form.quantidade_estoque col='col-md-3' %}
             </div>
             <div class="d-flex gap-2 mt-2">
-                <button type="submit" class="btn btn-success btn-lg">Salvar</button>
-                <a href="{% url 'produtos' %}" class="btn btn-secondary btn-lg">Cancelar</a>
+                <button type="submit" class="btn btn-success">Salvar</button>
+                <a href="{% url 'produtos' %}" class="btn btn-secondary">Cancelar</a>
             </div>
         </form>
     </div>

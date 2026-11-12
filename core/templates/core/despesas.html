@@ -3,11 +3,12 @@
 {% block title %}Despesas{% endblock %}
 
 {% block content %}
-<div class="d-flex justify-content-between align-items-center mb-4">
+<div class="d-flex flex-wrap gap-2 justify-content-between align-items-center mb-4">
     <h2>Despesas</h2>
     <a href="{% url 'nova_despesa' %}" class="btn btn-success">+ Nova Despesa</a>
 </div>
 
+<div class="table-responsive">
 <table class="table table-striped table-hover">
     <thead class="table-dark">
         <tr>
@@ -23,11 +24,15 @@
         <tr>
             <td>{{ despesa.descricao }}</td>
             <td>R$ {{ despesa.valor|moeda }}</td>
-            <td>{{ despesa.data }}</td>
-            <td>{{ despesa.categoria }}</td>
-            <td>
+            <td>{{ despesa.data|date:"d/m/Y" }}</td>
+            <td>{{ despesa.categoria|default:"—" }}</td>
+            <td class="text-nowrap">
                 <a href="{% url 'editar_despesa' despesa.id %}" class="btn btn-sm btn-warning">Editar</a>
-                <a href="{% url 'excluir_despesa' despesa.id %}" class="btn btn-sm btn-danger">Excluir</a>
+                <form method="post" action="{% url 'excluir_despesa' despesa.id %}" class="d-inline">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-sm btn-danger"
+                        data-confirm="Excluir a despesa {{ despesa.descricao }}?">Excluir</button>
+                </form>
             </td>
         </tr>
         {% empty %}
@@ -37,4 +42,5 @@
         {% endfor %}
     </tbody>
 </table>
+</div>
 {% endblock %}

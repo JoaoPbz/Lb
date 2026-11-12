@@ -1,5 +1,5 @@
 {% extends 'core/base.html' %}
-{% load filtros %}
+{% load filtros l10n %}
 
 {% block title %}Nova Venda{% endblock %}
 
@@ -27,7 +27,7 @@
                 </div>
                 <div class="col-md-4 mb-3">
                     <label class="form-label">Forma de Pagamento</label>
-                    <select name="forma_pagamento" id="forma_pagamento" class="form-select" required onchange="mostrarDesconto()">
+                    <select name="forma_pagamento" id="forma_pagamento" class="form-select" required>
                         <option value="fiado">Fiado</option>
                         <option value="avista">À Vista</option>
                     </select>
@@ -36,33 +36,39 @@
 
             <div class="row" id="desconto-box" style="display:none;">
                 <div class="col-md-4 mb-3">
-                    <label class="form-label">Desconto</label>
-                    <div class="d-flex gap-2">
-                        <button type="button" class="btn btn-outline-secondary w-100" onclick="setDesconto(0)">Sem desconto</button>
-                        <button type="button" class="btn btn-outline-primary w-100" onclick="setDesconto(5)">5%</button>
-                        <button type="button" class="btn btn-outline-success w-100" onclick="setDesconto(10)">10%</button>
-                    </div>
-                    <input type="hidden" name="desconto_percentual" id="desconto_percentual" value="0">
-                    <small class="text-muted">Desconto selecionado: <span id="desconto-label">Sem desconto</span></small>
+                    <label class="form-label" for="desconto_percentual">Desconto (só à vista)</label>
+                    <select name="desconto_percentual" id="desconto_percentual" class="form-select">
+                        <option value="0">Sem desconto</option>
+                        <option value="5">5%</option>
+                        <option value="10">10%</option>
+                    </select>
                 </div>
             </div>
 
             <hr>
             <h6>Produtos</h6>
-            <input type="text" id="busca-produto" class="form-control mb-3" placeholder="Buscar produto...">
+            <input type="search" id="busca-produto" class="form-control mb-3"
+                placeholder="Buscar produto por nome, código, tamanho ou cor...">
             {% for produto in produtos %}
-            <div class="form-check produto-item">
-                <input class="form-check-input" type="checkbox" name="produtos[]" value="{{ produto.id }}" onchange="calcularTotal()">
-                <label class="form-check-label">
-                    {{ produto.nome }} — {{ produto.tamanho }} {{ produto.cor }} — R$ {{ produto.preco_venda|moeda }}
+            <div class="d-flex align-items-center gap-2 mb-1 produto-item">
+                <input class="form-check-input mt-0" type="checkbox" name="produtos[]" value="{{ produto.id }}"
+                    id="produto-{{ produto.id }}" data-preco="{{ produto.preco_venda|unlocalize }}">
+                <input type="number" name="quantidade_{{ produto.id }}" class="form-control form-control-sm quantidade"
+                    style="width: 5rem" min="1" max="{{ produto.disponivel }}" value="1" aria-label="Quantidade">
+                <label class="form-check-label" for="produto-{{ produto.id }}">
+                    {{ produto.codigo_marca }} · {{ produto.nome }} — {{ produto.tamanho }} {{ produto.cor }}
+                    — R$ {{ produto.preco_venda|moeda }}
+                    <small class="text-muted">({{ produto.disponivel }} disponível)</small>
                 </label>
             </div>
+            {% empty %}
+            <p class="text-muted">Nenhum produto disponível no estoque.</p>
             {% endfor %}
 
             <div class="alert alert-info mt-3">
-                <strong>Total: R$ <span id="total-venda">0.00</span></strong>
+                <strong>Total: R$ <span id="total-venda">0,00</span></strong>
+                <small class="d-block text-muted">O valor final é conferido e calculado pelo sistema ao salvar.</small>
             </div>
-            <input type="hidden" name="total" id="total-hidden" value="0">
 
             <div class="d-flex gap-2 mt-2">
                 <button type="submit" class="btn btn-success">Salvar Venda</button>
@@ -71,39 +77,38 @@
         </form>
     </div>
 </div>
+{% endblock %}
 
+{% block scripts %}
 <script>
-function mostrarDesconto() {
-    const forma = document.getElementById('forma_pagamento').value;
-    document.getElementById('desconto-box').style.display = forma === 'avista' ? '' : 'none';
-    if (forma !== 'avista') setDesconto(0);
-}
+    const forma = document.getElementById('forma_pagamento');
+    const desconto = document.getElementById('desconto_percentual');
+    const formatar = valor => valor.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 
-function setDesconto(valor) {
-    document.getElementById('desconto_percentual').value = valor;
-    document.getElementById('desconto-label').textContent = valor === 0 ? 'Sem desconto' : valor + '%';
-    calcularTotal();
-}
+    function calcularTotal() {
+        let total = 0;
+        document.querySelectorAll('input[name="produtos[]"]:checked').forEach(function (cb) {
+            const qtd = parseInt(cb.closest('.produto-item').querySelector('.quantidade').value) || 0;
+            total += parseFloat(cb.dataset.preco) * qtd;
+        });
+        total = total * (1 - (parseInt(desconto.value) || 0) / 100);
+        document.getElementById('total-venda').textContent = formatar(total);
+    }
 
-function calcularTotal() {
-    const checkboxes = document.querySelectorAll('input[name="produtos[]"]:checked');
-    let total = 0;
-    checkboxes.forEach(function(cb) {
-        const label = cb.nextElementSibling.textContent;
-        const preco = parseFloat(label.split('R$')[1].trim());
-        total += preco;
+    forma.addEventListener('change', function () {
+        const aVista = forma.value === 'avista';
+        document.getElementById('desconto-box').style.display = aVista ? '' : 'none';
+        if (!aVista) desconto.value = '0';
+        calcularTotal();
     });
-    const desconto = parseInt(document.getElementById('desconto_percentual').value) || 0;
-    total = total * (1 - desconto / 100);
-    document.getElementById('total-venda').textContent = total.toFixed(2);
-    document.getElementById('total-hidden').value = total.toFixed(2);
-}
+    desconto.addEventListener('change', calcularTotal);
+    document.querySelectorAll('.produto-item input').forEach(i => i.addEventListener('input', calcularTotal));
 
-document.getElementById('busca-produto').addEventListener('input', function() {
-    const termo = this.value.toLowerCase();
-    document.querySelectorAll('.produto-item').forEach(function(item) {
-        item.style.display = item.textContent.toLowerCase().includes(termo) ? '' : 'none';
+    document.getElementById('busca-produto').addEventListener('input', function () {
+        const termo = this.value.toLowerCase();
+        document.querySelectorAll('.produto-item').forEach(function (item) {
+            item.style.display = item.textContent.toLowerCase().includes(termo) ? '' : 'none';
+        });
     });
-});
 </script>
 {% endblock %}

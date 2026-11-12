@@ -4,24 +4,15 @@
 {% block title %}Dashboard{% endblock %}
 
 {% block content %}
-<div class="d-flex justify-content-between align-items-center mb-4">
+<div class="d-flex flex-wrap gap-2 justify-content-between align-items-center mb-4">
     <h2>Dashboard</h2>
     <form method="get" class="d-flex gap-2">
-        <select name="mes" class="form-select">
-            <option value="1" {% if mes == 1 %}selected{% endif %}>Janeiro</option>
-            <option value="2" {% if mes == 2 %}selected{% endif %}>Fevereiro</option>
-            <option value="3" {% if mes == 3 %}selected{% endif %}>Março</option>
-            <option value="4" {% if mes == 4 %}selected{% endif %}>Abril</option>
-            <option value="5" {% if mes == 5 %}selected{% endif %}>Maio</option>
-            <option value="6" {% if mes == 6 %}selected{% endif %}>Junho</option>
-            <option value="7" {% if mes == 7 %}selected{% endif %}>Julho</option>
-            <option value="8" {% if mes == 8 %}selected{% endif %}>Agosto</option>
-            <option value="9" {% if mes == 9 %}selected{% endif %}>Setembro</option>
-            <option value="10" {% if mes == 10 %}selected{% endif %}>Outubro</option>
-            <option value="11" {% if mes == 11 %}selected{% endif %}>Novembro</option>
-            <option value="12" {% if mes == 12 %}selected{% endif %}>Dezembro</option>
+        <select name="mes" class="form-select" aria-label="Mês">
+            {% for numero, nome in meses %}
+            <option value="{{ numero }}" {% if mes == numero %}selected{% endif %}>{{ nome }}</option>
+            {% endfor %}
         </select>
-        <select name="ano" class="form-select">
+        <select name="ano" class="form-select" aria-label="Ano">
             {% for a in anos %}
             <option value="{{ a }}" {% if a == ano %}selected{% endif %}>{{ a }}</option>
             {% endfor %}
@@ -30,73 +21,56 @@
     </form>
 </div>
 
-<div class="row mb-4">
-    <div class="col-md-3">
-        <div class="card text-center border-success">
-            <div class="card-body">
-                <h6 class="card-title">Total Vendido</h6>
-                <p class="card-text text-success fw-bold fs-4">R$ {{ total_vendido|moeda }}</p>
-            </div>
-        </div>
-    </div>
-    <div class="col-md-3">
-        <div class="card text-center border-danger">
-            <div class="card-body">
-                <h6 class="card-title">Total Despesas</h6>
-                <p class="card-text text-danger fw-bold fs-4">R$ {{ total_despesas|moeda }}</p>
-            </div>
-        </div>
-    </div>
-    <div class="col-md-3">
-        <div class="card text-center border-warning">
-            <div class="card-body">
-                <h6 class="card-title">Total Compras</h6>
-                <p class="card-text text-warning fw-bold fs-4">R$ {{ total_compras|moeda }}</p>
-            </div>
-        </div>
-    </div>
-    <div class="col-md-3">
-        <div class="card text-center {% if lucro >= 0 %}border-success{% else %}border-danger{% endif %}">
-            <div class="card-body">
-                <h6 class="card-title">Lucro Real</h6>
-                <p class="card-text fw-bold fs-4 {% if lucro >= 0 %}text-success{% else %}text-danger{% endif %}">R$ {{ lucro|moeda }}</p>
-            </div>
-        </div>
-    </div>
+<h6 class="text-muted text-uppercase small">Resultado do mês (competência)</h6>
+<div class="row g-3 mb-4">
+    {% include 'core/_indicador.html' with titulo='Faturamento' valor=faturamento cor='primary' ajuda='Total das vendas feitas no mês, pagas ou não.' %}
+    {% include 'core/_indicador.html' with titulo='Custo das peças vendidas' valor=cmv cor='warning' ajuda='CMV: quanto custaram as peças vendidas no mês.' %}
+    {% include 'core/_indicador.html' with titulo='Despesas' valor=total_despesas cor='danger' ajuda='Despesas lançadas no mês.' %}
+    {% include 'core/_indicador.html' with titulo='Lucro Líquido' valor=lucro_liquido sinal=True ajuda='Faturamento − custo das peças vendidas − despesas.' %}
 </div>
 
-<div class="row">
-    <div class="col-md-6">
+<h6 class="text-muted text-uppercase small">Dinheiro (caixa)</h6>
+<div class="row g-3 mb-4">
+    {% include 'core/_indicador.html' with titulo='Recebido no mês' valor=recebido cor='success' ajuda='Pagamentos recebidos no mês, inclusive de fiados antigos.' %}
+    {% include 'core/_indicador.html' with titulo='Compras de estoque' valor=total_compras cor='secondary' ajuda='Dinheiro gasto em compras de mercadoria no mês.' %}
+    {% include 'core/_indicador.html' with titulo='Saldo de caixa' valor=saldo_caixa sinal=True ajuda='Recebido − compras de estoque − despesas.' %}
+    {% include 'core/_indicador.html' with titulo='Fiado a receber' valor=a_receber cor='danger' ajuda='Tudo que as clientes ainda devem, de todos os meses.' %}
+</div>
+
+<div class="row g-3">
+    <div class="col-lg-6">
         <div class="card">
             <div class="card-header bg-dark text-white">Vendas do Período</div>
-            <div class="card-body p-0">
+            <div class="card-body p-0 table-responsive">
                 <table class="table table-striped mb-0">
                     <thead>
                         <tr>
                             <th>Cliente</th>
                             <th>Data</th>
                             <th>Total</th>
+                            <th>Em aberto</th>
                         </tr>
                     </thead>
                     <tbody>
                         {% for venda in vendas %}
                         <tr>
-                            <td>{{ venda.cliente.nome }}</td>
-                            <td>{{ venda.data }}</td>
+                            <td><a href="{% url 'detalhe_venda' venda.id %}">{{ venda.cliente.nome }}</a></td>
+                            <td>{{ venda.data|date:"d/m/Y" }}</td>
                             <td>R$ {{ venda.total|moeda }}</td>
+                            <td>{% if venda.saldo_devedor > 0 %}R$ {{ venda.saldo_devedor|moeda }}{% else %}—{% endif %}</td>
                         </tr>
                         {% empty %}
-                        <tr><td colspan="3" class="text-center">Nenhuma venda no período.</td></tr>
+                        <tr><td colspan="4" class="text-center">Nenhuma venda no período.</td></tr>
                         {% endfor %}
                     </tbody>
                 </table>
             </div>
         </div>
     </div>
-    <div class="col-md-6">
+    <div class="col-lg-6">
         <div class="card">
             <div class="card-header bg-dark text-white">Despesas do Período</div>
-            <div class="card-body p-0">
+            <div class="card-body p-0 table-responsive">
                 <table class="table table-striped mb-0">
                     <thead>
                         <tr>
@@ -109,7 +83,7 @@
                         {% for despesa in despesas %}
                         <tr>
                             <td>{{ despesa.descricao }}</td>
-                            <td>{{ despesa.data }}</td>
+                            <td>{{ despesa.data|date:"d/m/Y" }}</td>
                             <td>R$ {{ despesa.valor|moeda }}</td>
                         </tr>
                         {% empty %}
