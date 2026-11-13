@@ -6,6 +6,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}Sistema de Vendas{% endblock %} · LB Finanças</title>
+    <link rel="icon" href="{% static 'core/img/logo.svg' %}" type="image/svg+xml">
     <link href="{% static 'core/vendor/bootstrap/bootstrap.min.css' %}" rel="stylesheet">
 </head>
 
@@ -13,7 +14,10 @@
 
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
         <div class="container-fluid">
-            <a class="navbar-brand" href="{% url 'dashboard' %}">LB Finanças</a>
+            <a class="navbar-brand d-flex align-items-center gap-2" href="{% url 'dashboard' %}">
+                <img src="{% static 'core/img/logo.svg' %}" alt="" width="32" height="32">
+                LB Finanças
+            </a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#menu"
                 aria-controls="menu" aria-expanded="false" aria-label="Abrir menu">
                 <span class="navbar-toggler-icon"></span>
