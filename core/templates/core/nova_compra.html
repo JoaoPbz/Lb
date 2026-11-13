@@ -23,57 +23,16 @@
 
                     <hr>
                     <h6>Produtos desta compra</h6>
+                    <p class="text-muted small mb-1">
+                        Mesma peça em outro tamanho ou cor? Use <strong>Duplicar</strong>: código, nome e preços são
+                        copiados e só falta preencher tamanho, cor e quantidade.
+                    </p>
                     <p class="text-muted small">
                         Se o produto já estiver cadastrado (mesmo código, tamanho e cor), a quantidade é somada
                         ao estoque e os preços são atualizados.
                     </p>
 
-                    <div id="produtos-container">
-                        <div class="border rounded p-3 mb-3 produto-row">
-                            <div class="row g-2 mb-2">
-                                <div class="col-md-4">
-                                    <label class="form-label">Código</label>
-                                    <input type="text" name="codigo_marca[]" class="form-control" maxlength="50"
-                                        placeholder="Código da marca" required>
-                                </div>
-                                <div class="col-md-4">
-                                    <label class="form-label">Nome</label>
-                                    <input type="text" name="nome[]" class="form-control" maxlength="100"
-                                        placeholder="Nome do produto" required>
-                                </div>
-                                <div class="col-md-2">
-                                    <label class="form-label">Tamanho</label>
-                                    <input type="text" name="tamanho[]" class="form-control" maxlength="10"
-                                        placeholder="Ex: M, G, 42" required>
-                                </div>
-                                <div class="col-md-2">
-                                    <label class="form-label">Cor</label>
-                                    <input type="text" name="cor[]" class="form-control" maxlength="30"
-                                        placeholder="Ex: Azul" required>
-                                </div>
-                            </div>
-                            <div class="row g-2 align-items-end">
-                                <div class="col-md-3">
-                                    <label class="form-label">Preço de Custo</label>
-                                    <input type="number" step="0.01" min="0" name="preco_custo[]" class="form-control"
-                                        placeholder="0.00" required>
-                                </div>
-                                <div class="col-md-3">
-                                    <label class="form-label">Preço de Venda</label>
-                                    <input type="number" step="0.01" min="0" name="preco_venda[]" class="form-control"
-                                        placeholder="0.00" required>
-                                </div>
-                                <div class="col-md-2">
-                                    <label class="form-label">Quantidade</label>
-                                    <input type="number" name="quantidade[]" class="form-control" min="1" value="1"
-                                        required>
-                                </div>
-                                <div class="col-md-4">
-                                    <button type="button" class="btn btn-outline-danger w-100 remover">Remover Produto</button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+                    <div id="produtos-container"></div>
 
                     <button type="button" class="btn btn-secondary mb-3" id="adicionar">+ Adicionar Produto</button>
 
@@ -90,37 +49,120 @@
         </div>
     </div>
 </div>
+
+<template id="modelo-linha">
+    <div class="border rounded p-3 mb-3 produto-row">
+        <div class="d-flex flex-wrap gap-2 justify-content-between align-items-center mb-2">
+            <strong class="titulo-linha">Produto</strong>
+            <div class="d-flex gap-2">
+                <button type="button" class="btn btn-sm btn-outline-primary duplicar"
+                    title="Cria uma cópia deste produto com tamanho e cor em branco">⧉ Duplicar</button>
+                <button type="button" class="btn btn-sm btn-outline-danger remover">Remover</button>
+            </div>
+        </div>
+        <div class="row g-2 mb-2">
+            <div class="col-md-4">
+                <label class="form-label">Código</label>
+                <input type="text" name="codigo_marca[]" class="form-control" maxlength="50"
+                    placeholder="Código da marca" required>
+            </div>
+            <div class="col-md-4">
+                <label class="form-label">Nome</label>
+                <input type="text" name="nome[]" class="form-control" maxlength="100" placeholder="Nome do produto"
+                    required>
+            </div>
+            <div class="col-6 col-md-2">
+                <label class="form-label">Tamanho</label>
+                <input type="text" name="tamanho[]" class="form-control" maxlength="10" placeholder="Ex: M, G, 42"
+                    required>
+            </div>
+            <div class="col-6 col-md-2">
+                <label class="form-label">Cor</label>
+                <input type="text" name="cor[]" class="form-control" maxlength="30" placeholder="Ex: Azul" required>
+            </div>
+        </div>
+        <div class="row g-2">
+            <div class="col-md-4">
+                <label class="form-label">Preço de Custo</label>
+                <input type="number" step="0.01" min="0" name="preco_custo[]" class="form-control" placeholder="0.00"
+                    required>
+            </div>
+            <div class="col-md-4">
+                <label class="form-label">Preço de Venda</label>
+                <input type="number" step="0.01" min="0" name="preco_venda[]" class="form-control" placeholder="0.00"
+                    required>
+            </div>
+            <div class="col-md-4">
+                <label class="form-label">Quantidade</label>
+                <input type="number" name="quantidade[]" class="form-control" min="1" value="1" required>
+            </div>
+        </div>
+    </div>
+</template>
 {% endblock %}
 
 {% block scripts %}
 <script>
     const container = document.getElementById('produtos-container');
+    const modelo = document.getElementById('modelo-linha');
+    const CAMPOS_COPIADOS = ['codigo_marca[]', 'nome[]', 'preco_custo[]', 'preco_venda[]'];
     const formatar = valor => valor.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    const campo = (linha, nome) => linha.querySelector('[name="' + nome + '"]');
 
     function calcularTotal() {
         let total = 0;
         container.querySelectorAll('.produto-row').forEach(function (linha) {
-            const custo = parseFloat(linha.querySelector('[name="preco_custo[]"]').value) || 0;
-            const qtd = parseInt(linha.querySelector('[name="quantidade[]"]').value) || 0;
+            const custo = parseFloat(campo(linha, 'preco_custo[]').value) || 0;
+            const qtd = parseInt(campo(linha, 'quantidade[]').value) || 0;
             total += custo * qtd;
         });
         document.getElementById('total-custo').textContent = formatar(total);
     }
 
-    document.getElementById('adicionar').addEventListener('click', function () {
-        const nova = container.querySelector('.produto-row').cloneNode(true);
-        nova.querySelectorAll('input').forEach(i => i.value = i.name === 'quantidade[]' ? '1' : '');
-        container.appendChild(nova);
+    function atualizarLinhas() {
+        const linhas = container.querySelectorAll('.produto-row');
+        linhas.forEach(function (linha, i) {
+            linha.querySelector('.titulo-linha').textContent = 'Produto ' + (i + 1);
+            linha.querySelector('.remover').disabled = linhas.length === 1;
+        });
         calcularTotal();
+    }
+
+    // Toda linha nova sai do modelo em branco, então a quantidade sempre começa em 1
+    function adicionarLinha(depoisDe) {
+        const linha = modelo.content.firstElementChild.cloneNode(true);
+        if (depoisDe) {
+            depoisDe.after(linha);
+        } else {
+            container.appendChild(linha);
+        }
+        return linha;
+    }
+
+    document.getElementById('adicionar').addEventListener('click', function () {
+        const linha = adicionarLinha();
+        atualizarLinhas();
+        campo(linha, 'codigo_marca[]').focus();
     });
 
     container.addEventListener('click', function (e) {
-        if (e.target.classList.contains('remover') && container.querySelectorAll('.produto-row').length > 1) {
-            e.target.closest('.produto-row').remove();
-            calcularTotal();
+        const linha = e.target.closest('.produto-row');
+        if (!linha) return;
+
+        if (e.target.closest('.duplicar')) {
+            const copia = adicionarLinha(linha);
+            CAMPOS_COPIADOS.forEach(nome => campo(copia, nome).value = campo(linha, nome).value);
+            atualizarLinhas();
+            campo(copia, 'tamanho[]').focus();
+        } else if (e.target.closest('.remover') && container.querySelectorAll('.produto-row').length > 1) {
+            linha.remove();
+            atualizarLinhas();
         }
     });
 
     container.addEventListener('input', calcularTotal);
+
+    adicionarLinha();
+    atualizarLinhas();
 </script>
 {% endblock %}
