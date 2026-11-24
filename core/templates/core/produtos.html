@@ -63,11 +63,6 @@
 
 {% block scripts %}
 <script>
-    document.getElementById('busca').addEventListener('input', function () {
-        const termo = this.value.toLowerCase();
-        document.querySelectorAll('.linha-busca').forEach(function (linha) {
-            linha.style.display = linha.textContent.toLowerCase().includes(termo) ? '' : 'none';
-        });
-    });
+    ativarBusca('busca', '.linha-busca');
 </script>
 {% endblock %}

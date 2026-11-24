@@ -1,0 +1,32 @@
+{% load static %}<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Algo deu errado · LB Finanças</title>
+    <link rel="icon" href="{% static 'core/img/logo.svg' %}" type="image/svg+xml">
+    <link href="{% static 'core/vendor/bootstrap/bootstrap.min.css' %}" rel="stylesheet">
+</head>
+
+<body class="bg-light">
+    <div class="container py-5" style="max-width: 640px">
+        <div class="card border-danger">
+            <div class="card-body p-4">
+                <div class="d-flex align-items-center gap-3 mb-3">
+                    <img src="{% static 'core/img/logo.svg' %}" alt="" width="48" height="48">
+                    <h1 class="h4 mb-0">Algo deu errado</h1>
+                </div>
+                <p>O sistema encontrou um erro e <strong>essa operação não foi concluída</strong>.</p>
+                <p>Volte para a tela anterior e tente de novo. Se o erro continuar, avise o João.
+                    Os detalhes técnicos ficaram registrados no arquivo <code>logs\erros.log</code>, na pasta do sistema.</p>
+                <div class="d-flex gap-2 mt-4">
+                    <a href="javascript:history.back()" class="btn btn-primary">Voltar</a>
+                    <a href="/" class="btn btn-outline-secondary">Ir para o Dashboard</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

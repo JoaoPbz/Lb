@@ -75,10 +75,14 @@ class Venda(models.Model):
         ('direta', 'Direta'),
         ('prova', 'Convertida de Prova'),
     ]
+    # 'fiado' continua como valor salvo no banco para não invalidar vendas e backups antigos
     FORMA_PAGAMENTO_CHOICES = [
+        ('fiado', 'A Prazo'),
         ('avista', 'À Vista'),
-        ('fiado', 'Fiado'),
+        ('cartao', 'Cartão'),
     ]
+    FORMAS_PAGAS_NA_HORA = {'avista', 'cartao'}
+    FORMA_COM_DESCONTO = 'avista'
     DESCONTO_CHOICES = [
         (0, 'Sem desconto'),
         (5, '5%'),

@@ -22,7 +22,7 @@ def normalizar_dados_legados():
     custo = Produto.objects.filter(pk=OuterRef('produto_id')).values('preco_custo')[:1]
     ItemVenda.objects.filter(custo_unitario__isnull=True).update(custo_unitario=Subquery(custo))
 
-    for venda in Venda.objects.filter(forma_pagamento='avista'):
+    for venda in Venda.objects.filter(forma_pagamento__in=Venda.FORMAS_PAGAS_NA_HORA):
         pago = PagamentoRepository.total_da_venda(venda)
         if pago < venda.total:
             PagamentoRepository.criar(venda, venda.data, venda.total - pago)

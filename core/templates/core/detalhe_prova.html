@@ -75,8 +75,9 @@
                 <div class="col-md-4 mb-3">
                     <label class="form-label">Forma de Pagamento</label>
                     <select name="forma_pagamento" class="form-select" id="pagamentoSelect">
-                        <option value="fiado">Fiado</option>
-                        <option value="avista">À Vista</option>
+                        {% for valor, nome in formas_pagamento %}
+                        <option value="{{ valor }}">{{ nome }}</option>
+                        {% endfor %}
                     </select>
                 </div>
                 <div class="col-md-4 mb-3" id="campoDesconto" style="display:none;">

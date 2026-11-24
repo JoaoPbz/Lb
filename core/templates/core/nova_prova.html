@@ -61,11 +61,6 @@
 
 {% block scripts %}
 <script>
-    document.getElementById('busca-produto').addEventListener('input', function () {
-        const termo = this.value.toLowerCase();
-        document.querySelectorAll('.produto-item').forEach(function (item) {
-            item.style.display = item.textContent.toLowerCase().includes(termo) ? '' : 'none';
-        });
-    });
+    ativarBusca('busca-produto', '.produto-item');
 </script>
 {% endblock %}

@@ -76,6 +76,25 @@
                 input.value = hoje;
             }
         });
+
+        // Filtra uma lista conforme o texto digitado. Usa a classe d-none porque um
+        // style.display comum perde para utilitários do Bootstrap como d-flex.
+        function ativarBusca(idCampo, seletorItens) {
+            const campo = document.getElementById(idCampo);
+            const normalizar = texto => texto.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase();
+            campo.addEventListener('input', function () {
+                const termos = normalizar(campo.value).split(/\s+/).filter(Boolean);
+                document.querySelectorAll(seletorItens).forEach(function (item) {
+                    const texto = normalizar(item.textContent);
+                    item.classList.toggle('d-none', !termos.every(t => texto.includes(t)));
+                });
+            });
+            // Enter na busca não pode enviar o formulário (finalizava a venda sem querer)
+            campo.addEventListener('keydown', function (e) {
+                if (e.key === 'Enter') e.preventDefault();
+            });
+            return campo;
+        }
     </script>
     {% block scripts %}{% endblock %}
 </body>

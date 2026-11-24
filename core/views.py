@@ -159,6 +159,7 @@ def detalhe_prova(request, id):
         'itens': prova.itens.select_related('produto'),
         'venda': prova.vendas.first(),
         'hoje': date.today(),
+        'formas_pagamento': Venda.FORMA_PAGAMENTO_CHOICES,
     })
 
 
@@ -207,10 +208,35 @@ def nova_venda(request):
             return redirect('vendas')
         except RegraNegocioError as erro:
             messages.error(request, str(erro))
+
+    # Em caso de erro, a tela volta com o que já tinha sido preenchido
+    produtos = list(ProdutoRepository.disponiveis())
+    dados = {}
+    if request.method == 'POST':
+        marcados = set(request.POST.getlist('produtos[]'))
+        for produto in produtos:
+            produto.marcado = str(produto.id) in marcados
+            produto.quantidade = request.POST.get(f'quantidade_{produto.id}') or 1
+        dados = {
+            'cliente_id': _inteiro_ou_none(request.POST.get('cliente_id')),
+            'data': request.POST.get('data'),
+            'forma_pagamento': request.POST.get('forma_pagamento'),
+            'desconto': _inteiro_ou_none(request.POST.get('desconto_percentual')),
+        }
     return render(request, 'core/nova_venda.html', {
         'clientes': ClienteRepository.listar(),
-        'produtos': ProdutoRepository.disponiveis(),
+        'produtos': produtos,
+        'formas_pagamento': Venda.FORMA_PAGAMENTO_CHOICES,
+        'descontos': Venda.DESCONTO_CHOICES,
+        'dados': dados,
     })
+
+
+def _inteiro_ou_none(valor):
+    try:
+        return int(valor)
+    except (TypeError, ValueError):
+        return None
 
 
 def detalhe_venda(request, id):

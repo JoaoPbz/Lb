@@ -31,10 +31,10 @@
 
 <h6 class="text-muted text-uppercase small">Dinheiro (caixa)</h6>
 <div class="row g-3 mb-4">
-    {% include 'core/_indicador.html' with titulo='Recebido no mês' valor=recebido cor='success' ajuda='Pagamentos recebidos no mês, inclusive de fiados antigos.' %}
+    {% include 'core/_indicador.html' with titulo='Recebido no mês' valor=recebido cor='success' ajuda='Pagamentos recebidos no mês, inclusive de vendas a prazo antigas.' %}
     {% include 'core/_indicador.html' with titulo='Compras de estoque' valor=total_compras cor='secondary' ajuda='Dinheiro gasto em compras de mercadoria no mês.' %}
     {% include 'core/_indicador.html' with titulo='Saldo de caixa' valor=saldo_caixa sinal=True ajuda='Recebido − compras de estoque − despesas.' %}
-    {% include 'core/_indicador.html' with titulo='Fiado a receber' valor=a_receber cor='danger' ajuda='Tudo que as clientes ainda devem, de todos os meses.' %}
+    {% include 'core/_indicador.html' with titulo='A receber (a prazo)' valor=a_receber cor='danger' ajuda='Tudo que as clientes ainda devem, de todos os meses.' %}
 </div>
 
 <div class="row g-3">

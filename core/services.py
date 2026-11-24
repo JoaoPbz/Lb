@@ -173,7 +173,7 @@ class VendaService:
         desconto = ler_inteiro(desconto_percentual or 0, 'Desconto')
         if desconto not in DESCONTOS_VALIDOS:
             raise RegraNegocioError('Desconto inválido.')
-        if forma_pagamento == 'fiado':
+        if forma_pagamento != Venda.FORMA_COM_DESCONTO:
             desconto = 0  # desconto só vale para pagamento à vista
 
         itens = {}
@@ -211,7 +211,7 @@ class VendaService:
                 produto.quantidade_estoque -= quantidade
                 produto.save(update_fields=['quantidade_estoque'])
 
-            if forma_pagamento == 'avista':
+            if forma_pagamento in Venda.FORMAS_PAGAS_NA_HORA:
                 PagamentoRepository.criar(venda, data, venda.total)
         return venda
 

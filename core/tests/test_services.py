@@ -53,6 +53,18 @@ class VendaServiceTest(TestCase):
         self.assertEqual(venda.desconto_percentual, 0)
         self.assertEqual(venda.total, Decimal('59.90'))
 
+    def test_cartao_ja_nasce_quitado_e_sem_desconto(self):
+        venda = self.criar({self.blusa.id: 1}, forma='cartao', desconto=10)
+        self.assertEqual(venda.desconto_percentual, 0)
+        self.assertEqual(venda.total, Decimal('59.90'))
+        self.assertEqual(VendaService.calcular_saldo_devedor(venda), 0)
+        self.assertEqual(venda.get_forma_pagamento_display(), 'Cartão')
+
+    def test_a_prazo_continua_salvo_como_fiado(self):
+        venda = self.criar({self.blusa.id: 1})
+        self.assertEqual(venda.forma_pagamento, 'fiado')
+        self.assertEqual(venda.get_forma_pagamento_display(), 'A Prazo')
+
     def test_desconto_fora_das_opcoes_e_rejeitado(self):
         with self.assertRaises(RegraNegocioError):
             self.criar({self.blusa.id: 1}, forma='avista', desconto=50)

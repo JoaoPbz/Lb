@@ -45,7 +45,7 @@ class TelasTest(TestCase):
     def test_dashboard_com_parametros_invalidos(self):
         resposta = self.client.get(reverse('dashboard') + '?mes=abc&ano=99999')
         self.assertEqual(resposta.status_code, 200)
-        self.assertContains(resposta, 'Fiado a receber')
+        self.assertContains(resposta, 'A receber (a prazo)')
 
     def test_edicao_mostra_valores_preenchidos(self):
         # Antes o filtro moeda gerava " 59,90", que o <input type=number> descartava
@@ -54,6 +54,12 @@ class TelasTest(TestCase):
         despesa = self.client.get(reverse('editar_despesa', args=[self.despesa.id]))
         self.assertContains(despesa, 'value="12.50"')
         self.assertContains(despesa, 'value="2026-11-12"')
+
+    def test_pagina_de_erro_500_amigavel(self):
+        from django.template.loader import render_to_string
+        pagina = render_to_string('500.html')
+        self.assertIn('Algo deu errado', pagina)
+        self.assertIn('logs\\erros.log', pagina)
 
     def test_exclusoes_nao_aceitam_get(self):
         urls = [
@@ -88,6 +94,34 @@ class FluxosTest(TestCase):
         }, follow=True)
         self.assertContains(resposta, 'Estoque insuficiente')
         self.assertFalse(Venda.objects.exists())
+
+    def test_nova_venda_mostra_formas_de_pagamento(self):
+        resposta = self.client.get(reverse('nova_venda'))
+        self.assertContains(resposta, '<option value="fiado" >A Prazo</option>', html=True)
+        self.assertContains(resposta, '<option value="cartao" >Cartão</option>', html=True)
+        self.assertNotContains(resposta, 'Fiado')
+
+    def test_nova_venda_com_erro_mantem_o_que_foi_preenchido(self):
+        resposta = self.client.post(reverse('nova_venda'), {
+            'cliente_id': self.cliente.id, 'data': '2026-11-20', 'forma_pagamento': 'cartao',
+            'produtos[]': [self.produto.id], f'quantidade_{self.produto.id}': '5',
+        })
+        self.assertContains(resposta, 'Estoque insuficiente')
+        self.assertContains(resposta, f'<option value="{self.cliente.id}" selected>Maria</option>', html=True)
+        self.assertContains(resposta, '<option value="cartao" selected>Cartão</option>', html=True)
+        self.assertContains(resposta, 'value="2026-11-20"')
+        self.assertContains(resposta, f'name="quantidade_{self.produto.id}"')
+        self.assertContains(resposta, 'value="5"')
+        self.assertRegex(resposta.content.decode(), rf'value="{self.produto.id}"[^>]*\schecked')
+
+    def test_venda_no_cartao_pela_tela(self):
+        self.client.post(reverse('nova_venda'), {
+            'cliente_id': self.cliente.id, 'data': '2026-11-20', 'forma_pagamento': 'cartao',
+            'produtos[]': [self.produto.id], f'quantidade_{self.produto.id}': '1',
+        })
+        venda = Venda.objects.get()
+        self.assertEqual(venda.forma_pagamento, 'cartao')
+        self.assertEqual(VendaService.calcular_saldo_devedor(venda), 0)
 
     def test_resolver_prova_como_devolvida(self):
         # Regressão: antes dava erro 500 (variável forma_pagamento indefinida)

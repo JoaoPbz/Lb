@@ -75,3 +75,32 @@ USE_I18N = True
 USE_TZ = True
 
 STATIC_URL = 'static/'
+
+# Erros do servidor ficam registrados em logs/erros.log mesmo com DEBUG=False,
+# para dar pra descobrir o que aconteceu no computador onde o sistema é usado.
+PASTA_LOGS = BASE_DIR / 'logs'
+PASTA_LOGS.mkdir(exist_ok=True)
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {
+        'detalhado': {'format': '{asctime} {levelname} {name}: {message}', 'style': '{'},
+    },
+    'handlers': {
+        'arquivo': {
+            'class': 'logging.handlers.RotatingFileHandler',
+            'filename': PASTA_LOGS / 'erros.log',
+            'maxBytes': 1_000_000,
+            'backupCount': 3,
+            'encoding': 'utf-8',
+            'delay': True,
+            'level': 'ERROR',
+            'formatter': 'detalhado',
+        },
+        'console': {'class': 'logging.StreamHandler', 'level': 'ERROR', 'formatter': 'detalhado'},
+    },
+    'loggers': {
+        'django.request': {'handlers': ['arquivo', 'console'], 'level': 'ERROR', 'propagate': False},
+    },
+}

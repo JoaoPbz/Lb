@@ -61,9 +61,9 @@ O projeto segue o padrão **MVC/MTV** do Django, com separação de responsabili
 - Gerenciamento de clientes
 - Controle de provas: as peças ficam reservadas e, ao resolver, a cliente pode ficar com parte delas
 - Registro de vendas diretas (com quantidade) e vendas originadas de provas
-- Controle de pagamentos (incluindo pagamentos parciais e fiado), limitado ao saldo devedor
+- Vendas à vista, no cartão ou a prazo, com pagamentos parciais limitados ao saldo devedor
 - Registro de despesas
-- Dashboard mensal com faturamento, custo das peças vendidas (CMV), lucro líquido, recebido, saldo de caixa e fiado a receber
+- Dashboard mensal com faturamento, custo das peças vendidas (CMV), lucro líquido, recebido, saldo de caixa e valores a receber
 - Exportação de extrato de clientes em Excel
 - Backup e restauração de dados (exportar/importar), tudo-ou-nada
 - Cálculo dinâmico de saldo devedor e total anual por cliente
@@ -156,7 +156,7 @@ Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
 | `ItemProva` | Produtos vinculados a uma prova |
 | `Venda` | Vendas diretas ou originadas de provas |
 | `ItemVenda` | Produtos vendidos em cada venda |
-| `Pagamento` | Pagamentos realizados (suporta parcial e fiado) |
+| `Pagamento` | Pagamentos realizados (suporta parcial e a prazo) |
 | `Despesa` | Registro de despesas por categoria |
 
 ---
